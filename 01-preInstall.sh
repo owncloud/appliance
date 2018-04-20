@@ -1,38 +1,29 @@
 #!/bin/bash
-#
-# An outer script called before setup is called
-#
 
+OWNCLOUD_PERMCONF_DIR="/var/lib/univention-appcenter/apps/owncloud/conf"
+OWNCLOUD_LDAP_FILE="${OWNCLOUD_PERMCONF_DIR}/ldap"
 
-ARGS=("$@")
-getarg() {
-    local found=0
-    for arg in "${ARGS[@]}"; do
-        if [ "$found" -eq 1 ]; then
-            echo "$arg"
-            break
-        fi
-        if [ "$arg" = "$1" ]; then
-            found=1
-        fi
-    done
-}
+mkdir -p ${OWNCLOUD_PERMCONF_DIR}
+eval "$(ucr shell)"
 
-service univention-firewall restart
-# Check if there is already a config.php and save it
-datadir="/var/lib/univention-appcenter/apps/owncloud82/conf"
+ucr set \
+  owncloud/user/enabled?"1" \
+  owncloud/group/enabled?"0" \
+  owncloud/ldap/base?"$ldap_base" \
+  owncloud/ldap/loginFilter?"(&(objectclass=person)(ownCloudEnabled=1)(|(uid=%uid)(mailPrimaryAddress=%uid)))" \
+  owncloud/ldap/userFilter?"(&(objectclass=person)(ownCloudEnabled=1))" \
+  owncloud/ldap/groupFilter?"(&(objectclass=posixGroup)(ownCloudEnabled=1))" \
+  owncloud/ldap/internalNameAttribute?"uid" \
+  owncloud/ldap/userUuid?"uid" \
+  owncloud/ldap/groupUuid?"gidNumber" \
+  owncloud/ldap/emailAttribute?"mailPrimaryAddress" \
+  owncloud/ldap/memberAssoc?"memberUid" \
+  owncloud/ldap/user/quotaAttribute?"ownCloudQuota" \
+  owncloud/ldap/base/users?"$ldap_base" \
+  owncloud/ldap/base/groups?"$ldap_base" \
+  owncloud/ldap/search/users?"" \
+  owncloud/ldap/search/groups?""
 
-if [ -f /var/www/owncloud/config/config.php ]
- then
-  mkdir -p $datadir && cp  /var/www/owncloud/config/config.php $datadir
-fi
-
-# In case the owncloud app appliance was used, fix the docker image name
-if [ "$(ucr get appcenter/apps/owncloud82/image)" = "owncloud82-app" ]; then
-    ucr set appcenter/apps/owncloud82/image="docker.software-univention.de/ucs-appbox-amd64:4.1-3"
-    file="$(getarg --error-file)"
-    echo "A configuration error has been fixed. Please install the update again to continue" > "$file"
-    exit 1
-fi
+ucr --shell search owncloud | grep ^owncloud >| ${OWNCLOUD_LDAP_FILE}
 
 exit 0

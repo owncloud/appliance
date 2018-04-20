@@ -127,12 +127,8 @@ univention-directory-manager settings/extended_attribute create "$@" \
   --dn "cn=ownCloudGroupEnabled,cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" \
   --set tabAdvanced='1'
   
-  
-#echo "making sure the avatars dir is there"
-#if [ !  -f /var/lib/univention-appcenter/apps/owncloud/data/files/avatars ]
-#then
-#mkdir -p "/var/lib/univention-appcenter/apps/owncloud/data/files/avatars"
-#fi
+# move this script out of root folder 
+mv setup-ldap.sh /var/lib/univention-appcenter/apps/owncloud/
 
 joinscript_save_current_version
 exit 0

@@ -148,4 +148,16 @@ EOF
 
 fi
 
+# Updating Icon Image for ownCloud docs
+
+eval "$(ucr shell)"
+
+ICON_PATH="/univention/js/dijit/themes/umc/icons/scalable/apps-"$(univention-app get owncloud component_id --values-only)".svg"
+
+OVBASE="ucs/web/overview/entries/admin/owncloud-admindoc"
+ucr set ${OVBASE}/icon="$ICON_PATH"
+
+OVBASE="ucs/web/overview/entries/admin/owncloud-userdoc"
+ucr set ${OVBASE}/icon="$ICON_PATH"
+
 exit 0

@@ -128,14 +128,11 @@ univention-directory-manager settings/extended_attribute create "$@" \
   --set tabAdvanced='1'
   
   
-echo "making sure the avatars dir is there"
-if [ !  -f /var/lib/univention-appcenter/apps/owncloud/data/files/avatars ]
-then
-mkdir -p "/var/lib/univention-appcenter/apps/owncloud/data/files/avatars"
-fi
-  
-
-
+#echo "making sure the avatars dir is there"
+#if [ !  -f /var/lib/univention-appcenter/apps/owncloud/data/files/avatars ]
+#then
+#mkdir -p "/var/lib/univention-appcenter/apps/owncloud/data/files/avatars"
+#fi
 
 joinscript_save_current_version
 exit 0

@@ -71,6 +71,13 @@ fi
 test -f /etc/cron.d/owncloud && touch /etc/cron.d/owncloud
 test -f /etc/cron.d/php && touch /etc/cron.d/php
 
+# avatars permissions folder creation fix
+chown -R www-data:www-data /var/lib/univention-appcenter/apps/owncloud/
+
 # symlink für collabora
 # ln -sf /etc/ssl/certs/ca-certificates.crt /var/www/owncloud/resources/config/ca-bundle.crt
+
+# To reduce the size of the log file, log level will be set to error (3)
+occ log:manage --level 3 >>/var/log/appcenter-install.log 2>&1
+
 exit 0

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# outer script, running after container destroyed, think of postRemove
+# - update
+# - uninstall
+
 VERSION=2
 SERVICE="ownCloud"
 
@@ -39,6 +43,9 @@ ucr unset \
   ${OVBASE}/label/de \
   ${OVBASE}/link \
   ${OVBASE}/priority
+  
+udm container/cn remove "$@" --dn "cn=owncloud,cn=custom
+attributes,cn=univention,$(ucr get ldap/base)"
 
 echo "Dropping ownCloud database..."
 mysql -u root -p$(cat /etc/mysql.secret) owncloud -e "DROP DATABASE IF EXISTS owncloud"

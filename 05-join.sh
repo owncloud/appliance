@@ -11,13 +11,14 @@ joinscript_init
 eval "$(ucr shell)"
 
 ucs_addServiceToLocalhost ${SERVICE} "$@" || die
+ICON_PATH="/univention/js/dijit/themes/umc/icons/scalable/apps-"$(univention-app get owncloud component_id --values-only)".svg"
 
 echo "Creating ownCloud admin docs..."
 OVBASE="ucs/web/overview/entries/admin/owncloud-admindoc"
 ucr set \
   ${OVBASE}/description="ownCloud Administration Manual" \
   ${OVBASE}/description/de="ownCloud Administrations-Handbuch (in Englisch)" \
-  ${OVBASE}/icon?"/owncloud/core/img/favicon.png" \
+  ${OVBASE}/icon="$ICON_PATH" \
   ${OVBASE}/label?"Admin Manual" \
   ${OVBASE}/label/de?"Admin Handbuch" \
   ${OVBASE}/link="https://doc.owncloud.com/server/10.0/admin_manual/" \
@@ -28,7 +29,7 @@ OVBASE="ucs/web/overview/entries/admin/owncloud-userdoc"
 ucr set \
   ${OVBASE}/description="ownCloud User Manual" \
   ${OVBASE}/description/de="ownCloud Benutzer-Handbuch (in Englisch)" \
-  ${OVBASE}/icon?"/owncloud/core/img/favicon.png" \
+  ${OVBASE}/icon="$ICON_PATH" \
   ${OVBASE}/label?"User Manual" \
   ${OVBASE}/label/de?"Benutzer Handbuch" \
   ${OVBASE}/link="https://doc.owncloud.com/server/10.0/user_manual/" \
@@ -125,6 +126,16 @@ univention-directory-manager settings/extended_attribute create "$@" \
   univention-directory-manager settings/extended_attribute modify "$@" \
   --dn "cn=ownCloudGroupEnabled,cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" \
   --set tabAdvanced='1'
+  
+  
+echo "making sure the avatars dir is there"
+if [ !  -f /var/lib/univention-appcenter/apps/owncloud/data/files/avatars ]
+then
+mkdir -p "/var/lib/univention-appcenter/apps/owncloud/data/files/avatars"
+fi
+  
+
+
 
 joinscript_save_current_version
 exit 0

@@ -70,7 +70,21 @@ then
 fi
 
 echo "disable the collabora app" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
-occ app:disable richdocuments 
+
+occ app:disable richdocuments
+
+echo "enabling useful apps" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
+
+occ market:install user_ldap
+occ market:install gallery
+occ market:install onlyoffice
+occ market:install files_texteditor
+occ market:install files_pdfviewer
+occ market:install activity
+
+echo "disable the only office app" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
+
+occ app:disable onlyoffice
 
 
 

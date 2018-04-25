@@ -4,6 +4,11 @@
 collabora_cert=/etc/univention/ssl/ucsCA/CAcert.pem
 owncloud_certs=/var/www/owncloud/resources/config/ca-bundle.crt
 
+echo "Declaring owncloud directories" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
+OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
+OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"
+OWNCLOUD_CONF="${OWNCLOUD_PERM_DIR}/conf"
+
 echo "Is the collabora certificate is mounted correctly" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 if [ -f $collabora_cert ]
 then
@@ -27,5 +32,8 @@ else
 fi
 #cat $collabora_log
 
-echo "enabling log log rotate" 
+echo "enabling log log rotate"
+ls /var/lib/univention-appcenter/apps/owncloud
+echo $OWNCLOUD_CONF
+ls $OWNCLOUD_CONF
 sed -i "s#);#  'log_rotate_size' => 104857600,\n&#" $OWNCLOUD_CONF/config.php

@@ -22,7 +22,7 @@ fi
 
 joinscript_remove_script_from_status_file owncloud
 
-echo "Dropping ownCloud admin docs..."
+echo "Dropping ownCloud admin docs..." 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 OVBASE='ucs/web/overview/entries/admin/owncloud-admindoc'
 ucr unset \
   ${OVBASE}/description \
@@ -33,7 +33,7 @@ ucr unset \
   ${OVBASE}/link \
   ${OVBASE}/priority
 
-echo "Dropping ownCloud user docs..."
+echo "Dropping ownCloud user docs..." 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 OVBASE='ucs/web/overview/entries/admin/owncloud-userdoc'
 ucr unset \
   ${OVBASE}/description \
@@ -47,7 +47,7 @@ ucr unset \
 udm container/cn remove "$@" --dn "cn=owncloud,cn=custom
 attributes,cn=univention,$(ucr get ldap/base)"
 
-echo "Dropping ownCloud database..."
+echo "Dropping ownCloud database..." 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 mysql -u root -p$(cat /etc/mysql.secret) owncloud -e "DROP DATABASE IF EXISTS owncloud"
 
 exit 0

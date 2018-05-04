@@ -1,7 +1,7 @@
 #! /bin/bash
 # Variables
 
-collabora_log=/var/log/collabora-certs-check.log
+collabora_log=/var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 collabora_cert=/etc/univention/ssl/ucsCA/CAcert.pem
 owncloud_certs=/var/www/owncloud/resources/config/ca-bundle.crt
 

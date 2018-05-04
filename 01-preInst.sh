@@ -2,6 +2,10 @@
 
 # outer script, only called when ownCloud App is installed
 
+to_logfile () {
+	tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
+}
+
 eval $(ucr shell)
 
 # Update the UCS LDAP in case the appid=owncloud82 was installed previously
@@ -36,9 +40,10 @@ OWNCLOUD_CONF_LDAP="${OWNCLOUD_CONF}/ldap"
 MACHINE_PWD="$(< $pwdfile)"
 
 mkdir -p $OWNCLOUD_CONF
+mkdir -p "$OWNCLOUD_DATA/files"
 touch /root/setup-ldap.sh
 
-echo "Base configuration for ownCloud"
+echo "Base configuration for ownCloud" | to_logfile
 ucr set \
   owncloud/user/enabled?"1" \
   owncloud/group/enabled?"0" \
@@ -94,6 +99,10 @@ then
 cat << EOF >| /root/setup-ldap.sh
 #!/usr/bin/env bash
 
+to_logfile () {
+	tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
+}
+
 echo "Fixing LDAP Settings"
 OWNCLOUD_PERMCONF_DIR="/var/lib/univention-appcenter/apps/owncloud/conf"
 OWNCLOUD_LDAP_FILE="\${OWNCLOUD_PERMCONF_DIR}/ldap"
@@ -105,15 +114,15 @@ echo "enabling ldap user app in preinst script"
 occ app:enable user_ldap
 
 echo "set ldap config with values from variables"
-occ config:app:set user_ldap ldap_host --value="\${LDAP_MASTER}" >>/var/log/appcenter-install.log 2>&1
+occ config:app:set user_ldap ldap_host --value="\${LDAP_MASTER}" 2>&1 | to_logfile
 occ config:app:get user_ldap ldap_host
-occ config:app:set user_ldap ldap_port --value="\${LDAP_MASTER_PORT}" >>/var/log/appcenter-install.log 2>&1
+occ config:app:set user_ldap ldap_port --value="\${LDAP_MASTER_PORT}" 2>&1 | to_logfile
 occ config:app:get user_ldap ldap_port
-occ config:app:set user_ldap ldap_dn --value="\${LDAP_HOSTDN}" >>/var/log/appcenter-install.log 2>&1
+occ config:app:set user_ldap ldap_dn --value="\${LDAP_HOSTDN}" 2>&1 | to_logfile
 occ config:app:get user_ldap ldap_dn
 
 while ! test -f "/etc/machine.secret"; do
-  sleep 1
+  sleep 1 | to_logfile
   echo "Still waiting"
 done
 
@@ -122,27 +131,27 @@ ldap_pwd_encoded=\$(cat /etc/machine.secret | base64 -w 0)
 echo \$ldap_pwd_encoded > ldap_pwd
 
 echo "setting ldap password"
-occ config:app:set user_ldap ldap_agent_password --value="\$(cat ldap_pwd)" >>/var/log/appcenter-install.log 2>&1
+occ config:app:set user_ldap ldap_agent_password --value="\$(cat ldap_pwd)" 2>&1 | to_logfile
 rm ldap_pwd
 
-echo "setting ldap_base" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldap_base --value="\${owncloud_ldap_base}" >>/var/log/appcenter-install.log 2>&1
+echo "setting ldap_base" 2>&1 | to_logfile
+occ config:app:set user_ldap ldap_base --value="\${owncloud_ldap_base}" 2>&1 | to_logfile
 occ config:app:get user_ldap ldap_base
 
-echo "configure ldap" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldap_login_filter --value="\${owncloud_ldap_loginFilter}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldap_User_Filter --value="\${owncloud_ldap_userFilter}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldap_Group_Filter --value="\${owncloud_ldap_groupFilter}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldap_Quota_Attribute --value="\${owncloud_ldap_user_quotaAttribute}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldap_Expert_Username_Attr --value="\${owncloud_ldap_internalNameAttribute}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldap_Expert_UUID_User_Attr --value="\${owncloud_ldap_userUuid}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldapExpertUUIDGroupAttr --value="\${owncloud_ldap_groupUuid}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldapEmailAttribute --value="\${owncloud_ldap_internalNameAttribute}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldapGroupMemberAssocAttr --value="\${owncloud_ldap_memberAssoc}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldapBaseUsers --value="\${owncloud_ldap_base_users}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldapBaseGroups --value="\${owncloud_ldap_base_groups}" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap useMemberOfToDetectMembership --value="0" >>/var/log/appcenter-install.log 2>&1
-occ config:app:set user_ldap ldapConfigurationActive --value="1" >>/var/log/appcenter-install.log 2>&1
+echo "configure ldap" 2>&1 | to_logfile
+occ config:app:set user_ldap ldap_login_filter --value="\${owncloud_ldap_loginFilter}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldap_User_Filter --value="\${owncloud_ldap_userFilter}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldap_Group_Filter --value="\${owncloud_ldap_groupFilter}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldap_Quota_Attribute --value="\${owncloud_ldap_user_quotaAttribute}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldap_Expert_Username_Attr --value="\${owncloud_ldap_internalNameAttribute}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldap_Expert_UUID_User_Attr --value="\${owncloud_ldap_userUuid}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldapExpertUUIDGroupAttr --value="\${owncloud_ldap_groupUuid}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldapEmailAttribute --value="\${owncloud_ldap_internalNameAttribute}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldapGroupMemberAssocAttr --value="\${owncloud_ldap_memberAssoc}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldapBaseUsers --value="\${owncloud_ldap_base_users}" 2>&1 | to_logfile
+occ config:app:set user_ldap ldapBaseGroups --value="\${owncloud_ldap_base_groups}" 2>&1 | to_logfile
+occ config:app:set user_ldap useMemberOfToDetectMembership --value="0" 2>&1 | to_logfile
+occ config:app:set user_ldap ldapConfigurationActive --value="1" 2>&1 | to_logfile
 
 EOF
 

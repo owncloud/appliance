@@ -30,10 +30,10 @@ then
 else 
 	echo "There is no Collabora Certificate" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log        
 fi
-#cat $collabora_log
 
 echo "enabling log log rotate"
-ls /var/lib/univention-appcenter/apps/owncloud
-echo $OWNCLOUD_CONF
-ls $OWNCLOUD_CONF
+# Debugging options:
+#ls /var/lib/univention-appcenter/apps/owncloud
+#echo $OWNCLOUD_CONF
+#ls $OWNCLOUD_CONF
 sed -i "s#);#  'log_rotate_size' => 104857600,\n&#" $OWNCLOUD_CONF/config.php

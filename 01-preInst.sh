@@ -1,15 +1,25 @@
 #!/bin/bash
-
+# preinst script
 # outer script, only called when ownCloud App is installed
+echo "folder declaration"
+OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
+OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"
+OWNCLOUD_CONF="${OWNCLOUD_PERM_DIR}/conf"
+OWNCLOUD_CONF_LDAP="${OWNCLOUD_CONF}/ldap"
 
+echo "folder creation"
+mkdir -p $OWNCLOUD_CONF
+mkdir -p "$OWNCLOUD_DATA/files"
+touch /root/setup-ldap.sh
+
+echo "enable logging"
 to_logfile () {
 	tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 }
-
+echo "read environment variables"
 eval $(ucr shell)
 
-# Update the UCS LDAP in case the appid=owncloud82 was installed previously
-echo "update LDAP schema..."
+echo "look for binddn and bindpwdfile"
 while [ $# -gt 0 ]
 do
     case "$1" in
@@ -29,19 +39,19 @@ do
   esac
 done
 
+
+MACHINE_PWD="$(< $pwdfile)"
+
+echo "Check if owncloud 9 was installed previously"
+if [ -f  $OWNCLOUD_DATA/files/tobemigrated ]
+
+then
+
 udm settings/ldapschema modify --binddn="$binddn" --bindpwdfile="$pwdfile" \
 --dn="cn=owncloud82,cn=ldapschema,cn=univention,$ldap_base" \
 --set name=owncloud --set filename=owncloud.schema
 
-OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
-OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"
-OWNCLOUD_CONF="${OWNCLOUD_PERM_DIR}/conf"
-OWNCLOUD_CONF_LDAP="${OWNCLOUD_CONF}/ldap"
-MACHINE_PWD="$(< $pwdfile)"
-
-mkdir -p $OWNCLOUD_CONF
-mkdir -p "$OWNCLOUD_DATA/files"
-touch /root/setup-ldap.sh
+fi
 
 echo "Base configuration for ownCloud" | to_logfile
 ucr set \
@@ -64,8 +74,9 @@ ucr set \
 
 ucr --shell search owncloud | grep ^owncloud >| ${OWNCLOUD_CONF_LDAP}
 
-
 ### Update 9.1 -> 10.0, markerfile "tobemigrated" created by unjoin.sh in 9.1
+
+echo "Check if this is a migration from 9.1"
 if [ -f  $OWNCLOUD_DATA/files/tobemigrated ]
 then
   echo "Found ownCloud 9.1 backup, restoring data"
@@ -157,7 +168,7 @@ EOF
 
 fi
 
-# Updating Icon Image for ownCloud docs
+echo "Updating Icon Image for ownCloud docs"
 
 eval "$(ucr shell)"
 
@@ -168,5 +179,6 @@ ucr set ${OVBASE}/icon="$ICON_PATH"
 
 OVBASE="ucs/web/overview/entries/admin/owncloud-userdoc"
 ucr set ${OVBASE}/icon="$ICON_PATH"
+
 
 exit 0

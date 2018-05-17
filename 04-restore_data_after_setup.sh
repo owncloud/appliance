@@ -1,6 +1,9 @@
 #! /bin/bash
 # Variables
-
+OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
+OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"
+OWNCLOUD_CONF="${OWNCLOUD_PERM_DIR}/conf"
+OWNCLOUD_CONF_LDAP="${OWNCLOUD_CONF}/ldap"
 collabora_log=/var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 collabora_cert=/etc/univention/ssl/ucsCA/CAcert.pem
 owncloud_certs=/var/www/owncloud/resources/config/ca-bundle.crt

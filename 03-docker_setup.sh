@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# docker script setup
 # inner script, called to setup / configure the docker container
 
 to_logfile () {
@@ -11,6 +11,11 @@ echo "enabling ldap app in docker setup script" 2>&1 | to_logfile
 OWNCLOUD_PERMCONF_DIR="/var/lib/univention-appcenter/apps/owncloud/conf"
 OWNCLOUD_LDAP_FILE="${OWNCLOUD_PERMCONF_DIR}/ldap"
 
+#waiting for the user_ldap app
+echo "wait for 5 seconds"
+sleep 5
+
+echo "trying to enable user_ldap app"
 n=0
 until [ $n -ge 10 ]
 do

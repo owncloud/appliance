@@ -1,5 +1,5 @@
 #!/bin/bash
-# preinst script
+
 # outer script, only called when ownCloud App is installed
 echo "folder declaration"
 OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"

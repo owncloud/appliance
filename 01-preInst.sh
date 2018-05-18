@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # outer script, only called when ownCloud App is installed
+
 echo "folder declaration"
 OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
 OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"
@@ -20,6 +21,7 @@ echo "read environment variables"
 eval $(ucr shell)
 
 echo "look for binddn and bindpwdfile"
+
 while [ $# -gt 0 ]
 do
     case "$1" in
@@ -54,6 +56,7 @@ udm settings/ldapschema modify --binddn="$binddn" --bindpwdfile="$pwdfile" \
 fi
 
 echo "Base configuration for ownCloud" | to_logfile
+
 ucr set \
   owncloud/user/enabled?"1" \
   owncloud/group/enabled?"0" \
@@ -91,6 +94,7 @@ then
     owncloud < $OWNCLOUD_DATA/files/database.sql
 
   echo "- Update storages"
+
   mysql -u root -p$(cat /etc/mysql.secret) owncloud \
     -e "UPDATE oc_storages SET id='local::/var/lib/univention-appcenter/apps/owncloud/data/files' \
     WHERE id='local::/var/lib/owncloud/'"
@@ -115,12 +119,14 @@ to_logfile () {
 }
 
 echo "Fixing LDAP Settings"
+
 OWNCLOUD_PERMCONF_DIR="/var/lib/univention-appcenter/apps/owncloud/conf"
 OWNCLOUD_LDAP_FILE="\${OWNCLOUD_PERMCONF_DIR}/ldap"
 
 eval "\$(< \${OWNCLOUD_LDAP_FILE})"
 echo -e "\n\n------"
 cat \${OWNCLOUD_LDAP_FILE}
+
 echo "enabling ldap user app in preinst script"
 occ app:enable user_ldap
 
@@ -135,6 +141,7 @@ occ config:app:get user_ldap ldap_dn
 while ! test -f "/etc/machine.secret"; do
   sleep 1 | to_logfile
   echo "Still waiting"
+
 done
 
 # getting LDAP password and encoding it
@@ -164,11 +171,13 @@ occ config:app:set user_ldap ldapBaseGroups --value="\${owncloud_ldap_base_group
 occ config:app:set user_ldap useMemberOfToDetectMembership --value="0" 2>&1 | to_logfile
 occ config:app:set user_ldap ldapConfigurationActive --value="1" 2>&1 | to_logfile
 
+
 EOF
 
 fi
 
 echo "Updating Icon Image for ownCloud docs"
+
 
 eval "$(ucr shell)"
 
@@ -179,6 +188,5 @@ ucr set ${OVBASE}/icon="$ICON_PATH"
 
 OVBASE="ucs/web/overview/entries/admin/owncloud-userdoc"
 ucr set ${OVBASE}/icon="$ICON_PATH"
-
 
 exit 0

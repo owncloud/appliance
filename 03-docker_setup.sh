@@ -8,6 +8,7 @@ to_logfile () {
 
 echo "enabling ldap app in docker setup script" 2>&1 | to_logfile
 
+
 OWNCLOUD_PERMCONF_DIR="/var/lib/univention-appcenter/apps/owncloud/conf"
 OWNCLOUD_LDAP_FILE="${OWNCLOUD_PERMCONF_DIR}/ldap"
 
@@ -21,17 +22,20 @@ until [ $n -ge 10 ]
 do
   occ app:enable -q user_ldap 2>&1 | to_logfile
 
+
   n=$(($n+1))
   sleep 3
 done
 
 echo "Read base configs for ldap" 2>&1 | to_logfile
+
 eval "$(< ${OWNCLOUD_LDAP_FILE})"
 
 if [ -f /var/lib/univention-appcenter/apps/owncloud/data/files/tobemigrated ]
 then
   echo "delete ldap config in docker setup script" 2>&1 | to_logfile
   su -c "php occ ldap:delete-config ''" www-data 2>&1 | to_logfile
+
   rm /var/lib/univention-appcenter/apps/owncloud/data/files/tobemigrated
 fi
 
@@ -63,6 +67,7 @@ occ ldap:set-config s01 ldapBaseGroups $owncloud_ldap_base_groups 2>&1 | to_logf
 occ ldap:set-config s01 useMemberOfToDetectMembership 0 2>&1 | to_logfile
 occ ldap:set-config s01 ldapConfigurationActive 1 2>&1 | to_logfile
 
+
 cat << EOF >| /etc/cron.d/sync
 */10  *  *  *  * root /usr/local/bin/occ user:sync -m disable 'OCA\User_LDAP\User_Proxy'
 EOF
@@ -77,16 +82,19 @@ then
 fi
 
 # Cron seems to igrore old cron files
+
 test -f /etc/cron.d/owncloud && touch /etc/cron.d/owncloud
 test -f /etc/cron.d/php && touch /etc/cron.d/php
 
 # avatars permissions folder creation fix
+echo "avatar fix" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 chown -R www-data:www-data /var/lib/univention-appcenter/apps/owncloud/
 
 # symlink für collabora
 # ln -sf /etc/ssl/certs/ca-certificates.crt /var/www/owncloud/resources/config/ca-bundle.crt
 
 # To reduce the size of the log file, log level will be set to error (3)
+echo "set loglevel to 3" 2>&1 | to_logfile
 occ log:manage --level 3 2>&1 | to_logfile
 
 exit 0

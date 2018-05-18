@@ -128,6 +128,7 @@ univention-directory-manager settings/extended_attribute create "$@" \
   --set tabAdvanced='1'
   
 # move this script out of root folder 
+echo "move this script out of root folder" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log 
 mv setup-ldap.sh /var/lib/univention-appcenter/apps/owncloud/
 
 joinscript_save_current_version

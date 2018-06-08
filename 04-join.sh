@@ -13,7 +13,7 @@ eval "$(ucr shell)"
 ucs_addServiceToLocalhost ${SERVICE} "$@" || die
 ICON_PATH="/univention/js/dijit/themes/umc/icons/scalable/apps-"$(univention-app get owncloud component_id --values-only)".svg"
 
-echo "[04.JOIN] Creating ownCloud admin docs..."
+echo "Creating ownCloud admin docs..."
 OVBASE="ucs/web/overview/entries/admin/owncloud-admindoc"
 ucr set \
   ${OVBASE}/description="ownCloud Administration Manual" \
@@ -24,7 +24,7 @@ ucr set \
   ${OVBASE}/link="https://doc.owncloud.com/server/10.0/admin_manual/" \
   ${OVBASE}/priority?95
 
-echo "[04.JOIN] Creating ownCloud user docs..."
+echo "Creating ownCloud user docs..."
 OVBASE="ucs/web/overview/entries/admin/owncloud-userdoc"
 ucr set \
   ${OVBASE}/description="ownCloud User Manual" \
@@ -127,8 +127,9 @@ univention-directory-manager settings/extended_attribute create "$@" \
   --dn "cn=ownCloudGroupEnabled,cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" \
   --set tabAdvanced='1'
   
-echo "[04.JOIN] move this script out of root folder" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log 
+echo "move this script out of root folder" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log 
 mv setup-ldap.sh /var/lib/univention-appcenter/apps/owncloud/
 
 joinscript_save_current_version
+
 exit 0

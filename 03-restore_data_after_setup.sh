@@ -8,7 +8,7 @@ collabora_log=/var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-ap
 collabora_cert=/etc/univention/ssl/ucsCA/CAcert.pem
 owncloud_certs=/var/www/owncloud/resources/config/ca-bundle.crt
 
-echo "Is the collabora certificate is mounted correctly" >> $collabora_log
+echo "[03.RESTORE_DATA] Is the collabora certificate is mounted correctly" >> $collabora_log
 if [ -f $collabora_cert ]
 then
         echo "Yes.
@@ -31,8 +31,8 @@ else
 fi
 #cat $collabora_log
 
-echo "enabling log log rotate" 
+echo "[03.RESTORE_DATA] enabling log log rotate" 
 sed -i "s#);#  'log_rotate_size' => 104857600,\n&#" $OWNCLOUD_CONF/config.php
 
-echo "configuring owncloud for onlyoffice use"
+echo "[03.RESTORE_DATA] configuring owncloud for onlyoffice use"
 sed -i "s#);#  'onlyoffice' => array ('verify_peer_off' => TRUE),\n&#" $OWNCLOUD_CONF/config.php

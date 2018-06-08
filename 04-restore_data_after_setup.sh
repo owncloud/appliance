@@ -13,7 +13,6 @@ if [ -f $collabora_cert ]
 then
         echo "Yes.
         Was it updated?" >> $collabora_log
-
         # Declaring the marker-string
         collab="This is a certificate for Collabora for ownCloud"
         if grep -Fq "$collab" "$owncloud_certs"
@@ -28,7 +27,7 @@ then
                 echo "Certificate has been succesfully updated" >> $collabora_log
         fi
 else 
-	echo "There is no Collabora Certificate" >> $collabora_log        
+        echo "There is no Collabora Certificate" >> $collabora_log        
 fi
 #cat $collabora_log
 

@@ -15,7 +15,7 @@ touch /root/setup-ldap.sh
 
 echo "enable logging"
 to_logfile () {
-	tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
+  tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 }
 echo "read environment variables"
 eval $(ucr shell)
@@ -115,7 +115,7 @@ cat << EOF >| /root/setup-ldap.sh
 #!/usr/bin/env bash
 
 to_logfile () {
-	tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
+  tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 }
 
 echo "Fixing LDAP Settings"

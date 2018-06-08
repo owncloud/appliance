@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# unjoin
 # outer script, running after container destroyed, think of postRemove
 # - uninstall
 

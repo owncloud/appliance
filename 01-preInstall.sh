@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# pre install
 # outer script, only called when ownCloud App is installed
 
 echo "[01.PRE_INST] folder declaration"

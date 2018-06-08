@@ -1,5 +1,6 @@
 #!/bin/bash
-
+# join
+# outer script
 VERSION=2
 SERVICE="ownCloud"
 

@@ -7,7 +7,7 @@ OWNCLOUD_BACKUP_DIR="${OWNCLOUD_PERMDATA_DIR}/backup"
 
 mkdir -p ${OWNCLOUD_BACKUP_DIR}
 
-echo "[05.STORE_DATA] Dumping ownCloud database..." 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
+echo "[04.STORE_DATA] Dumping ownCloud database..." 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 mysqldump \
   -u${OWNCLOUD_DB_USERNAME} \
   -p${OWNCLOUD_DB_PASSWORD} \

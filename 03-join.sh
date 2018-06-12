@@ -127,9 +127,17 @@ univention-directory-manager settings/extended_attribute create "$@" \
   univention-directory-manager settings/extended_attribute modify "$@" \
   --dn "cn=ownCloudGroupEnabled,cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" \
   --set tabAdvanced='1'
-  
-echo "[03.JOIN] move this script out of root folder" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log 
-mv setup-ldap.sh /var/lib/univention-appcenter/apps/owncloud/
+
+OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
+OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"
+OWNCLOUD_CONF="${OWNCLOUD_PERM_DIR}/conf"
+OWNCLOUD_CONF_LDAP="${OWNCLOUD_CONF}/ldap"
+OWNCLOUD_BACKUP_DIR="${OWNCLOUD_DATA}/backup"
+
+#echo "[03.JOIN] database check"
+#mysql -uroot -p$(cat /etc/mysql.secret) -e "show databases" >> /root/databasecheck
+#mysql -uroot -p$(cat /etc/mysql.secret) owncloud < ${OWNCLOUD_BACKUP_DIR}/database.sql
 
 joinscript_save_current_version
+
 exit 0

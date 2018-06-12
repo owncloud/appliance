@@ -7,6 +7,7 @@ OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
 OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"
 OWNCLOUD_CONF="${OWNCLOUD_PERM_DIR}/conf"
 OWNCLOUD_CONF_LDAP="${OWNCLOUD_CONF}/ldap"
+OWNCLOUD_BACKUP_DIR="${OWNCLOUD_DATA}/backup"
 
 echo "[01.PRE_INST] folder creation"
 mkdir -p $OWNCLOUD_CONF
@@ -118,7 +119,7 @@ to_logfile () {
   tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 }
 
-echo "Fixing LDAP Settings"
+echo "[SETUP-LDAP] Fixing LDAP Settings"
 
 OWNCLOUD_PERMCONF_DIR="/var/lib/univention-appcenter/apps/owncloud/conf"
 OWNCLOUD_LDAP_FILE="\${OWNCLOUD_PERMCONF_DIR}/ldap"
@@ -127,10 +128,23 @@ eval "\$(< \${OWNCLOUD_LDAP_FILE})"
 echo -e "\n\n------"
 cat \${OWNCLOUD_LDAP_FILE}
 
-echo "enabling ldap user app in preinst script"
-occ app:enable user_ldap
 
-echo "set ldap config with values from variables"
+echo "[SETUP-LDAP] Enable user_ldap app" 2>&1
+n=1
+until [ $n -ge 20 ]
+do 
+  r=$(occ app:enable user_ldap 2>&1)
+  t=$?
+  echo -n "."
+  [[ $t == 0 ]] && break
+  n=$(($n + 1))
+  sleep 1
+done
+echo
+#echo "enabling ldap user app in preinst script"
+#occ app:enable user_ldap
+
+echo "[SETUP-LDAP] set ldap config with values from variables"
 occ config:app:set user_ldap ldap_host --value="\${LDAP_MASTER}" 2>&1 | to_logfile
 occ config:app:get user_ldap ldap_host
 occ config:app:set user_ldap ldap_port --value="\${LDAP_MASTER_PORT}" 2>&1 | to_logfile
@@ -148,15 +162,15 @@ done
 ldap_pwd_encoded=\$(cat /etc/machine.secret | base64 -w 0)
 echo \$ldap_pwd_encoded > ldap_pwd
 
-echo "setting ldap password"
+echo "[SETUP-LDAP] setting ldap password"
 occ config:app:set user_ldap ldap_agent_password --value="\$(cat ldap_pwd)" 2>&1 | to_logfile
 rm ldap_pwd
 
-echo "setting ldap_base" 2>&1 | to_logfile
+echo "[SETUP-LDAP] setting ldap_base" 2>&1 | to_logfile
 occ config:app:set user_ldap ldap_base --value="\${owncloud_ldap_base}" 2>&1 | to_logfile
 occ config:app:get user_ldap ldap_base
 
-echo "configure ldap" 2>&1 | to_logfile
+echo "[SETUP-LDAP] configure ldap" 2>&1 | to_logfile
 occ config:app:set user_ldap ldap_login_filter --value="\${owncloud_ldap_loginFilter}" 2>&1 | to_logfile
 occ config:app:set user_ldap ldap_User_Filter --value="\${owncloud_ldap_userFilter}" 2>&1 | to_logfile
 occ config:app:set user_ldap ldap_Group_Filter --value="\${owncloud_ldap_groupFilter}" 2>&1 | to_logfile

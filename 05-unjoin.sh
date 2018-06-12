@@ -52,7 +52,4 @@ mysql -u root -p$(cat /etc/mysql.secret) owncloud -e "DROP DATABASE IF EXISTS ow
 echo "[05.UNJOIN] removing owncloud.secret file"
 rm /etc/owncloud.secret
 
-# experimental
-[ -d /var/lib/univention-appcenter/apps/owncloud/conf ] && mv /var/lib/univention-appcenter/apps/owncloud/conf /var/lib/univention-appcenter/apps/owncloud/data/backup/
-
 exit 0

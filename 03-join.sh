@@ -143,14 +143,17 @@ FQDN="$(ucr get hostname).$(ucr get domainname)"
 if [ "$(ucr get appcenter/apps/onlyoffice-ds/status)" = "installed" ]; then
     echo "[03.JOIN] check for installation of ONLYOFFICE"
     univention-app shell owncloud occ market:install -n onlyoffice
-    univention-app shell owncloud occ config:app:set onlyoffice DocumentServerUrl --value="https://$FQDN/onlyoffice-documentserver"
+    univention-app shell owncloud occ app:enable onlyoffice
+    if [[ "$(univention-app shell owncloud occ config:app:get onlyoffice DocumentServerUrl)" == "" ]]; then
+        univention-app shell owncloud occ config:app:set onlyoffice DocumentServerUrl --value="https://$FQDN/onlyoffice-documentserver"
+    fi
 fi
 
 if [ "$(ucr get appcenter/apps/collabora/status)" = "installed" ] || [ "$(ucr get appcenter/apps/collabora-online/status)" = "installed" ]; then
     echo "[03.JOIN] check for installation of Collabora"
     univention-app shell owncloud occ app:enable richdocuments
 
-    if [[ "$(occ config:app:get richdocuments wopi_url)" == "" ]]; then
+    if [[ "$(univention-app shell owncloud occ config:app:get richdocuments wopi_url)" == "" ]]; then
         univention-app shell owncloud occ config:app:set richdocuments wopi_url --value https://$FQDN/
     fi
 fi

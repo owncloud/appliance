@@ -67,12 +67,6 @@ EOF
 echo "[02.DOCKER_SETUP] first user sync"
 /usr/local/bin/occ user:sync -m disable "OCA\User_LDAP\User_Proxy" 2>&1 | to_logfile
 
-## Added from request of Thomas, to have a working collabora setup out of the box
-echo "[02.DOCKER_SETUP] setting collabora URL"
-if [[ "$(occ config:app:get richdocuments wopi_url)" == "" ]]
-then
-   occ config:app:set richdocuments wopi_url --value https://"$docker_host_name" 2>&1 | to_logfile
-fi
 
 # Cron seems to igrore old cron files
 echo "[02.DOCKER_SETUP] cron fix"

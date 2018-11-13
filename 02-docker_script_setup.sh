@@ -6,6 +6,7 @@ to_logfile () {
   tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 }
 
+chown -R www-data:www-data /var/lib/univention-appcenter/apps/owncloud
 OWNCLOUD_PERMCONF_DIR="/var/lib/univention-appcenter/apps/owncloud/conf"
 OWNCLOUD_LDAP_FILE="${OWNCLOUD_PERMCONF_DIR}/ldap"
 
@@ -21,6 +22,36 @@ do
   sleep 1
 done
 echo
+
+if [ $n -ge 20 ]
+then
+echo "[02.DOCKER_SETUP] Enabling of user_ldap FAILED! after $n tries" 2>&1 | to_logfile
+echo $r
+else
+echo "[02.DOCKER_SETUP] user_ldap enabled successfully! after $n tries" 2>&1 | to_logfile
+fi
+
+echo "[02.DOCKER_SETUP] Waiting for LDAP app testing..." 2>&1 | to_logfile
+
+n=1
+until [ $n -ge 40 ]
+do 
+  r=$(occ ldap:show-config 2>&1)
+  t=$?
+  echo -n "."
+  [[ $t == 0 ]] && break
+  n=$(($n + 1))
+  sleep 1
+done
+echo
+
+if [ $n -ge 40 ]
+then
+echo "[02.DOCKER_SETUP] Testing of user_ldap FAILED! after $n tries" 2>&1 | to_logfile
+echo $r
+else
+echo "[02.DOCKER_SETUP] user_ldap tested successfully! after $n tries" 2>&1 | to_logfile
+fi
 
 echo "[02.DOCKER_SETUP] Read base configs for ldap" 2>&1 | to_logfile
 eval "$(< ${OWNCLOUD_LDAP_FILE})"
@@ -62,10 +93,10 @@ occ ldap:set-config s01 ldapConfigurationActive 1 2>&1 | to_logfile
 
 echo "[02.DOCKER_SETUP] setting up user sync in cron"
 cat << EOF >| /etc/cron.d/sync
-*/10  *  *  *  * root /usr/local/bin/occ user:sync -m disable 'OCA\User_LDAP\User_Proxy'
+*/10  *  *  *  * root /usr/bin/occ user:sync -m disable 'OCA\User_LDAP\User_Proxy'
 EOF
 echo "[02.DOCKER_SETUP] first user sync"
-/usr/local/bin/occ user:sync -m disable "OCA\User_LDAP\User_Proxy" 2>&1 | to_logfile
+/usr/bin/occ user:sync -m disable "OCA\User_LDAP\User_Proxy" 2>&1 | to_logfile
 
 
 # Cron seems to igrore old cron files
@@ -124,4 +155,28 @@ sed -i "s#);#  'log_rotate_size' => 104857600,\n&#" $OWNCLOUD_CONF/config.php
 echo "[02.DOCKER_SETUP] configuring owncloud for onlyoffice use"
 sed -i "s#);#  'onlyoffice' => array ('verify_peer_off' => TRUE),\n&#" $OWNCLOUD_CONF/config.php
 
-exit 0
+#setting collabora URL
+
+occ app:enable richdocuments 
+
+if [[ "$(occ config:app:get richdocuments wopi_url)" == "" ]]
+then
+   occ config:app:set richdocuments wopi_url --value https://"$docker_host_name" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
+fi
+
+occ app:disable richdocuments
+
+# set default values for app settings
+if ! grep OWNCLOUD_DEFAULT_LANGUAGE /etc/univention/base.conf > /dev/null; then
+    printf "\nOWNCLOUD_DEFAULT_LANGUAGE: en" >> /etc/univention/base.conf
+fi
+
+if ! grep OWNCLOUD_DOMAIN /etc/univention/base.conf > /dev/null; then
+    printf "\nOWNCLOUD_DOMAIN: localhost" >> /etc/univention/base.conf
+fi
+
+if ! grep OWNCLOUD_SUB_URL /etc/univention/base.conf > /dev/null; then
+    printf "\nOWNCLOUD_SUB_URL: /owncloud" >> /etc/univention/base.conf
+fi
+
+true

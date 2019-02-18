@@ -26,7 +26,13 @@ InitialValue = /owncloud
 Required = false
 Show = Settings
 
-
+[OWNCLOUD_LOG_LEVEL]
+Description = Configure the ownCloud Log Level. Valid values are 0, 1, 2, 3, 4.
+Description[de] = Konfiguriert die ownCloud Log Level. Gültige Werte sind 0, 1, 2, 3, 4.
+Type = String
+InitialValue = 3
+Required = false
+Show = Settings
 
 # Configuration script run in the Docker Container.
 #!/usr/bin/python

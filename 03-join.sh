@@ -159,4 +159,10 @@ fi
 
 joinscript_save_current_version
 
+# Make Appliance Administrator=ownCloud Administrator
+
+udm users/user modify --dn=uid=Administrator,cn=users,$(ucr get ldap/base) --set owncloudEnabled=1
+
+univention-app shell owncloud occ group:add-member --member Administrator admin
+
 exit 0

@@ -1,0 +1,96 @@
+[owncloudUser]
+Type=ExtendedOption
+Module=users/user,settings/usertemplate
+ObjectClass=ownCloudUser
+Default=@%@owncloud/user/enabled@%@
+Editable=1
+Description=ownCloud
+LongDescription=User can use ownCloud
+DescriptionDE=ownCloud
+LongDescriptionDE=Der User darf ownCloud verwenden
+BelongsTo=ownCloudUser
+
+[ownCloudUserEnabled]
+Type=ExtendedAttribute
+Module=users/user,settings/usertemplate
+LdapMapping=ownCloudEnabled
+BelongsTo=ownCloudUser
+Description=ownCloud enabled
+LongDescription=User can use ownCloud
+DescriptionDE=ownCloud aktiviert
+LongDescriptionDE=Der User darf ownCloud verwenden
+TabName=ownCloud
+TabNameDE=ownCloud
+OverwriteTab=0
+Required=0
+CliName=owncloudEnabled
+UdmSyntax=boolean
+DisableWeb=1
+Default=1
+Advanced=0
+Options=owncloudUser
+MayChange=1
+DeleteObjectClass=1
+TabPosition=1
+DontSearch=0
+
+[ownCloudUserQuota]
+Type=ExtendedAttribute
+Module=users/user,settings/usertemplate
+LdapMapping=ownCloudQuota
+BelongsTo=ownCloudUser
+Description=ownCloud Quota
+LongDescription=How much disk space may the user use
+DescriptionDE=ownCloud Quota
+LongDescriptionDE=Wie viel Speicherplatz darf der User verwenden
+TabName=ownCloud
+TabNameDE=ownCloud
+GroupName=Quota Settings
+GroupNameDE=Quota-Einstellungen
+OverwriteTab=0
+Required=0
+CliName=owncloudQuota
+UdmSyntax=string
+Default=@%@owncloud/user/quota@%@
+Advanced=0
+Options=owncloudUser
+MayChange=1
+DeleteObjectClass=0
+TabPosition=1
+DontSearch=0
+
+[owncloudGroup]
+Type=ExtendedOption
+ObjectClass=ownCloudGroup
+Module=groups/group
+Default=@%@owncloud/group/enabled@%@
+Editable=1
+Description=ownCloud
+LongDescription=Wether Group may be used in ownCloud
+DescriptionDE=ownCloud
+LongDescriptionDE=Die Gruppe in ownCloud verwenden
+BelongsTo=ownCloudGroup
+
+[ownCloudGroupEnabled]
+Type=ExtendedAttribute
+Module=groups/group
+LdapMapping=ownCloudEnabled
+BelongsTo=ownCloudGroup
+Description=ownCloud enabled
+LongDescription=Wether Group may be used in ownCloud
+DescriptionDE=ownCloud aktiviert
+LongDescriptionDE=Die Gruppe in ownCloud verwenden
+TabName=ownCloud
+TabNameDE=ownCloud
+OverwriteTab=0
+Required=0
+CliName=owncloudEnabled
+UdmSyntax=boolean
+DisableWeb=1
+Default=0
+Advanced=0
+Options=owncloudGroup
+MayChange=1
+DeleteObjectClass=1
+TabPosition=1
+DontSearch=0

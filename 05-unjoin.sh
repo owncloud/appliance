@@ -43,9 +43,6 @@ ucr unset \
   ${OVBASE}/link \
   ${OVBASE}/priority
   
-udm container/cn remove "$@" --dn "cn=owncloud,cn=custom
-attributes,cn=univention,$(ucr get ldap/base)"
-
 echo "[05.UNJOIN] Dropping ownCloud database..." 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 mysql -u root -p$(cat /etc/mysql.secret) owncloud -e "DROP DATABASE IF EXISTS owncloud"
 

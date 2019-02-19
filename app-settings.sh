@@ -34,6 +34,14 @@ InitialValue = 3
 Required = false
 Show = Settings
 
+[OWNCLOUD_LOST_PASSWORD_LINK]
+Description = Configure the Reset Password Link. Valid values are true or false.
+Description[de] = Konfiguriert den Password Reset Link. Gültige Werte sind true oder false.
+Type = String
+InitialValue = true
+Required = false
+Show = Settings
+
 # Configuration script run in the Docker Container.
 #!/usr/bin/python
 

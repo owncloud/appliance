@@ -184,12 +184,12 @@ fi
 
 # LOG_LEVEL
 if ! grep OWNCLOUD_LOG_LEVEL /etc/univention/base.conf > /dev/null; then
-    printf "\nOWNCLOUD_LOG_LEVEL: /owncloud" >> /etc/univention/base.conf
+    printf "\nOWNCLOUD_LOG_LEVEL: 3" >> /etc/univention/base.conf
 fi
 
 # LOST_PASSWORD_LINK
 if ! grep OWNCLOUD_LOST_PASSWORD_LINK /etc/univention/base.conf > /dev/null; then
-    printf "\nOWNCLOUD_LOST_PASSWORD_LINK: /owncloud" >> /etc/univention/base.conf
+    printf "\nOWNCLOUD_LOST_PASSWORD_LINK: true" >> /etc/univention/base.conf
 fi
 
 

@@ -166,17 +166,31 @@ fi
 
 occ app:disable richdocuments
 
-# set default values for app settings
+
+# DEFAULT_LANGUAGE
 if ! grep OWNCLOUD_DEFAULT_LANGUAGE /etc/univention/base.conf > /dev/null; then
     printf "\nOWNCLOUD_DEFAULT_LANGUAGE: en" >> /etc/univention/base.conf
 fi
 
+# OWNCLOUD_DOMAIN
 if ! grep OWNCLOUD_DOMAIN /etc/univention/base.conf > /dev/null; then
     printf "\nOWNCLOUD_DOMAIN: localhost" >> /etc/univention/base.conf
 fi
 
+# OWNCLOUD_SUB_URL
 if ! grep OWNCLOUD_SUB_URL /etc/univention/base.conf > /dev/null; then
     printf "\nOWNCLOUD_SUB_URL: /owncloud" >> /etc/univention/base.conf
 fi
+
+# LOG_LEVEL
+if ! grep OWNCLOUD_LOG_LEVEL /etc/univention/base.conf > /dev/null; then
+    printf "\nOWNCLOUD_LOG_LEVEL: /owncloud" >> /etc/univention/base.conf
+fi
+
+# LOST_PASSWORD_LINK
+if ! grep OWNCLOUD_LOST_PASSWORD_LINK /etc/univention/base.conf > /dev/null; then
+    printf "\nOWNCLOUD_LOST_PASSWORD_LINK: /owncloud" >> /etc/univention/base.conf
+fi
+
 
 true

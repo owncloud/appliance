@@ -77,5 +77,5 @@ if [ -e /tmp/do-not-restart ]
 then
 	rm /tmp/do-not-restart
 else
-	echo "sleep 10; service docker-app-owncloud restart" | at now
+	echo "sleep 10; univention-app restart owncloud" | at now
 fi

@@ -24,6 +24,6 @@ with open(base_conf) as f, open(local_container_env_file, "w") as t:
 		t.write("%s=%s\n" % (keyvalue[0], keyvalue[1]))
 
 if os.path.isfile(local_container_env_file):
-	os.chmod(local_container_env_file, 755)
+	os.chmod(local_container_env_file, 0o755)
 
 sys.exit(0)

@@ -1,47 +1,33 @@
-volumes:
-  files:
-    driver: local
-  redis:
-    driver: local
+version: '2'
 
 services:
   owncloud:
-    image: owncloud/server:${OWNCLOUD_VERSION}
+    image: docker.software-univention.de/owncloud-owncloud:10.2.1-1
+    network_mode: bridge
     restart: always
-    ports:
-      - ${HTTP_PORT}:8080
-    depends_on:
-      - db
-      - redis
+    links:
+    - "redis:redis"
     environment:
-      - OWNCLOUD_DOMAIN=${OWNCLOUD_DOMAIN}
-      - OWNCLOUD_DB_TYPE=mysql
-      - OWNCLOUD_DB_NAME=owncloud
-      - OWNCLOUD_DB_USERNAME=owncloud
-      - OWNCLOUD_DB_PASSWORD=owncloud
-      - OWNCLOUD_DB_HOST=db
-      - OWNCLOUD_ADMIN_USERNAME=${ADMIN_USERNAME}
-      - OWNCLOUD_ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - OWNCLOUD_MYSQL_UTF8MB4=true
-      - OWNCLOUD_REDIS_ENABLED=true
-      - OWNCLOUD_REDIS_HOST=redis
-    healthcheck:
-      test: ["CMD", "/usr/bin/healthcheck"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    volumes:
-      - files:/mnt/data
-      
+      OWNCLOUD_DB_TYPE: mysql
+      OWNCLOUD_ADMIN_USERNAME: owncloud
+      OWNCLOUD_ADMIN_PASSWORD: owncloud
+      OWNCLOUD_SUB_URL: /owncloud
+      OWNCLOUD_VOLUME_CONFIG: /var/lib/univention-appcenter/apps/owncloud/conf
+      OWNCLOUD_VOLUME_FILES: /var/lib/univention-appcenter/apps/owncloud/data/files
+      OWNCLOUD_VOLUME_CERTS: /var/lib/univention-appcenter/apps/owncloud/data/certs
+      OWNCLOUD_VOLUME_APPS: /var/lib/univention-appcenter/apps/owncloud/data/custom
+      OWNCLOUD_VOLUME_SESSIONS: /var/lib/univention-appcenter/apps/owncloud/data/sessions
+      OWNCLOUD_MYSQL_UTF8MB4: "true"
+      OWNCLOUD_REDIS_ENABLED: "true"
+      OWNCLOUD_REDIS_HOST: redis
+      OWNCLOUD_REDIS_PORT: 6379
+      OWNCLOUD_DOMAIN: "@%@hostname@%@.@%@domainname@%@"
+
+  
+  
   redis:
-    image: webhippie/redis:latest
+    image: docker.software-univention.de/owncloud-redis:10.2.1-1
+    network_mode: bridge
     restart: always
     environment:
-      - REDIS_DATABASES=1
-    healthcheck:
-      test: ["CMD", "/usr/bin/healthcheck"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    volumes:
-      - redis:/var/lib/redis
+      REDIS_DATABASES: 1

@@ -17,8 +17,19 @@ echo "[01.PRE_INST] enable logging"
 to_logfile () {
   tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 }
+
+echo "[01.PRE_INST] Test for broken ownCloud installation and fix it to enable updating"
+if [ -d "/root/setup-ldap.sh" ]; then
+  mv /root/setup-ldap.sh /root/setup-ldap.sh.canbedeleted
+  touch /root/setup-ldap.sh
+  # start the owncloud container
+  docker start $(ucr get appcenter/apps/owncloud/container)
+fi
+
 echo "[01.PRE_INST] read environment variables"
 eval $(ucr shell)
+
+#echo "$(hostname -f|cut -f1 -d ' ')" > $OWNCLOUD_PERM_DIR/domainname.php
 
 echo "[01.PRE_INST] look for binddn and bindpwdfile"
 
@@ -41,6 +52,23 @@ do
   esac
 done
 
+echo "[01.PRE_INST] configure mariadb"
+# check: if mariadb is installed, set options to enable utf8mb4 support for owncloud
+if [ -n "$mysql_config_mysqld_innodb_file_format" ] && [ "$mysql_config_mysqld_innodb_file_format" != "Barracuda" ]; then
+  echo "Error: innodb_file_format set to value that has to be user modified. Exiting to not overwrite user configuration."
+  exit 1
+fi
+
+ucr set mysql/config/mysqld/innodb_large_prefix?ON \
+    mysql/config/mysqld/innodb_file_format?Barracuda \
+    mysql/config/mysqld/innodb_file_per_table?ON
+
+if dpkg-query -W -f '${Status}' univention-mariadb 2>/dev/null | grep -q "^install"; then
+  # mariadb installed, restart server with new settings
+  service mariadb restart
+fi
+
+
 
 MACHINE_PWD="$(< $pwdfile)"
 
@@ -56,6 +84,18 @@ udm settings/ldapschema modify --binddn="$binddn" --bindpwdfile="$pwdfile" \
 fi
 
 echo "[01.PRE_INST] Base configuration for ownCloud" | to_logfile
+
+echo "[01.PRE_INST] getting ldap password"
+
+while ! test -f "/etc/machine.secret"; do
+
+  sleep 1
+  echo "Still waiting" 2>&1
+
+done
+
+#ldappwd=$(cat /etc/machine.secret | base64 -w 0)
+ldappwd=$(cat /etc/machine.secret)
 
 ucr set \
   owncloud/user/enabled?"1" \
@@ -126,5 +166,10 @@ ucr set ${OVBASE}/icon="$ICON_PATH"
 
 OVBASE="ucs/web/overview/entries/admin/owncloud-userdoc"
 ucr set ${OVBASE}/icon="$ICON_PATH"
+
+# instruct "Configuration script run on the Docker Host" to restart or not
+
+touch /tmp/do-not-restart
+
 
 exit 0

@@ -153,10 +153,20 @@ if [ "$(ucr get appcenter/apps/collabora/status)" = "installed" ] || [ "$(ucr ge
     univention-app shell owncloud occ app:enable richdocuments
 
     if [[ "$(univention-app shell owncloud occ config:app:get richdocuments wopi_url)" == "" ]]; then
-        univention-app shell owncloud occ config:app:set richdocuments wopi_url --value https://$FQDN/
+        univention-app shell owncloud occ config:app:set richdocuments wopi_url --value https://"$FQDN"/
     fi
 fi
 
 joinscript_save_current_version
+
+# Make Appliance Administrator=ownCloud Administrator
+
+udm users/user modify --dn=uid=Administrator,cn=users,$(ucr get ldap/base) --set owncloudEnabled=1
+
+echo "Adding Administrator account in to the ownCloud group..."
+
+univention-app shell owncloud occ user:sync "OCA\User_LDAP\User_Proxy" -m remove
+
+univention-app shell owncloud occ group:add-member --member Administrator admin
 
 exit 0

@@ -1,20 +1,35 @@
 # Settings that can be used to configure the App. ini file format.
 
 
+[OWNCLOUD_LICENSE_KEY]
+Description = OwnCloud enterprise license Key
+Description[de] = OwnCloud Enterprise Lizenzschlüssel
+Type = String
+InitialValue = ""
+Required = false
+Show = Settings
+
+[OWNCLOUD_MARKETPLACE_APIKEY]
+Description = OwnCloud marketplace API key
+Description[de] = OwnCloud Markt API Schlüssel
+Type = String
+InitialValue = ""
+Required = false
+Show = Settings
 
 [OWNCLOUD_DEFAULT_LANGUAGE]
-Description = Configure the ownCloud default_language option. Valid values are ISO_639-1 language codes such as 'den', 'en', 'fr', ...
-Description[de] = Konfiguriert die ownCloud Option default_language option. Gültige Werte sind ISO_639-1 Sprachcodes wie 'den', 'en', 'fr', ...
+Description = Configure the ownCloud default language. Valid values: 'en', 'de', 'fr', ...
+Description[de] = Konfiguriert die Standard Sprache. Gültige Werte sind z.B. 'en', 'de', 'fr', ...
 Type = String
 InitialValue = en
 Required = false
 Show = Settings
 
 [OWNCLOUD_DOMAIN]
-Description = Setting for OWNCLOUD_DOMAIN env variable. Together with SUB_URL this defines the owncloud setting overwrite.cli.url. (default: localhost)
-Description[de] = Einstellung für die OWNCLOUD_DOMAIN env Variable. Zusammen mit der Einstellung SUB_URL wird die Option overwrite.cli.url gesetzt. (Standard: localhost)
+Description = Setting for OWNCLOUD_DOMAIN env variable. Together with SUB_URL this defines the owncloud setting overwrite.cli.url. 
+Description[de] = Einstellung für die OWNCLOUD_DOMAIN env Variable. Zusammen mit der Einstellung SUB_URL wird die Option overwrite.cli.url gesetzt. 
 Type = String
-InitialValue = localhost
+InitialValue = @%@hostname@%@.@%@domainname@%@
 Required = false
 Show = Settings
 
@@ -26,6 +41,29 @@ InitialValue = /owncloud
 Required = false
 Show = Settings
 
+[OWNCLOUD_LOG_LEVEL]
+Description = Configure the ownCloud Log Level. Valid values are 0, 1, 2, 3, 4.
+Description[de] = Setzt den ownCloud Log Level. Gültige Werte sind 0, 1, 2, 3, 4.
+Type = String
+InitialValue = 3
+Required = false
+Show = Settings
+
+[OWNCLOUD_LOST_PASSWORD_LINK]
+Description = Configure the Reset Password Link. Valid values are true or false.
+Description[de] = Konfiguriert den Password Reset Link. Gültige Werte sind true oder false.
+Type = String
+InitialValue = true
+Required = false
+Show = Settings
+
+[OWNCLOUD_UPDATE_CHECKER]
+Description = Configure the ownCloud Update Checker. Valid values are true or false.
+Description[de] = Konfiguriert den Update Checker. Gültige Werte sind true oder false.
+Type = String
+InitialValue = false
+Required = false
+Show = Settings
 
 
 # Configuration script run in the Docker Container.

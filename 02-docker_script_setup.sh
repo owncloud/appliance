@@ -199,4 +199,9 @@ if ! grep OWNCLOUD_LOST_PASSWORD_LINK /etc/univention/base.conf > /dev/null; the
     printf "\nOWNCLOUD_LOST_PASSWORD_LINK: true" >> /etc/univention/base.conf
 fi
 
+# OWNCLOUD_UPDATE_CHECKER
+if ! grep OWNCLOUD_UPDATE_CHECKER /etc/univention/base.conf > /dev/null; then
+    printf "\nOWNCLOUD_UPDATE_CHECKER: false" >> /etc/univention/base.conf
+fi
+
 true

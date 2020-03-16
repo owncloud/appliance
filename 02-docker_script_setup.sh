@@ -204,4 +204,8 @@ if ! grep OWNCLOUD_UPDATE_CHECKER /etc/univention/base.conf > /dev/null; then
     printf "\nOWNCLOUD_UPDATE_CHECKER: false" >> /etc/univention/base.conf
 fi
 
+echo "[02.DOCKER_SETUP] diabling web updater"
+
+occ app:disable updatenotification
+
 true

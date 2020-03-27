@@ -1,6 +1,6 @@
 #!/bin/bash
 # store data
-# outer script
+# inner script
 # called on update and remove
 OWNCLOUD_PERMDATA_DIR="/var/lib/univention-appcenter/apps/owncloud/data"
 OWNCLOUD_BACKUP_DIR="${OWNCLOUD_PERMDATA_DIR}/backup"

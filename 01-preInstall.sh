@@ -113,7 +113,8 @@ ucr set \
   owncloud/ldap/base/users?"$ldap_base" \
   owncloud/ldap/base/groups?"$ldap_base" \
   owncloud/ldap/search/users?"" \
-  owncloud/ldap/search/groups?""
+  owncloud/ldap/search/groups?"" \
+  owncloud/saml/path?/oc-shib
 
 ucr --shell search owncloud | grep ^owncloud >| ${OWNCLOUD_CONF_LDAP}
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # join
 # outer script
-VERSION=2
+VERSION=3
 SERVICE="ownCloud"
 
 . /usr/share/univention-join/joinscripthelper.lib
@@ -70,7 +70,7 @@ univention-directory-manager settings/extended_attribute create "$@" \
   univention-directory-manager settings/extended_attribute modify "$@" \
   --dn "cn=ownCloudUserEnabled,cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" \
   --set tabAdvanced='1' \
-  --set default="$owncloud_user_enabled"
+  --set default="$owncloud_user_enabled" || die
 
 univention-directory-manager settings/extended_attribute create "$@" \
   --position "cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" --set module="users/user" \
@@ -98,7 +98,7 @@ univention-directory-manager settings/extended_attribute create "$@" \
   --set hook='None' || \
   univention-directory-manager settings/extended_attribute modify "$@" \
   --dn "cn=ownCloudUserQuota,cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" \
-  --set tabAdvanced='1'
+  --set tabAdvanced='1' || die
 
 univention-directory-manager settings/extended_attribute create "$@" \
   --position "cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" --set module="groups/group" \
@@ -126,7 +126,34 @@ univention-directory-manager settings/extended_attribute create "$@" \
   --set hook='None' || \
   univention-directory-manager settings/extended_attribute modify "$@" \
   --dn "cn=ownCloudGroupEnabled,cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" \
-  --set tabAdvanced='1'
+  --set tabAdvanced='1' || die
+
+# SAML service provider
+udm saml/serviceprovider create "$@" --ignore_exists --position "cn=saml-serviceprovider,cn=univention,$ldap_base" \
+	--set Identifier="https://${hostname}.${domainname}${owncloud_saml_path}" \
+	--set AssertionConsumerService="https://${hostname}.${domainname}/Shibboleth.sso/SAML2/POST" \
+	--append LDAPattributes=uid \
+	--set NameIDFormat=urn:oasis:names:tc:SAML:2.0:nameid-format:persistent \
+	--set attributesNameFormat=urn:mace:dir:attribute-def:eduPersonPrincipalName \
+	--set isActivated=TRUE \
+	--set serviceproviderdescription="ownCloud single sign on" \
+	--set simplesamlAttributes=TRUE \
+	--set simplesamlNameIDAttribute=uid \
+	--set singleLogoutService="https://${hostname}.${domainname}/Shibboleth.sso/SLO/POST" || die
+
+# Portal tile for SSO Login
+udm settings/portal_entry create "$@" --ignore_exists --position "cn=portal,cn=univention,$ldap_base" \
+	--set name=univention-owncloud-saml \
+	--set activated=TRUE \
+	--set authRestriction=anonymous \
+	--set category=service \
+	--append description='"en_EN" "SSO ownCloud"' \
+	--append description='"de_DE" "SSO ownCloud"' \
+	--append displayName='"en_EN" "SSO ownCloud"' \
+	--append displayName='"de_DE" "SSO ownCloud"' \
+	--set icon="$(base64 /usr/share/univention-portal/icons/entries/owncloud.svg)" \
+	--set link="https://${hostname}.${domainname}${owncloud_saml_path}" \
+	--set portal="cn=domain,cn=portal,cn=univention,$ldap_base" || die
 
 OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
 OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"

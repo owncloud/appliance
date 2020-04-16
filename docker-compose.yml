@@ -2,7 +2,8 @@ version: '2'
 
 services:
   owncloud:
-    image: docker.software-univention.de/owncloud-owncloud:10.2.1-1
+    # Image was: owncloud/appliance:10.3.2
+    image: owncloud/appliance:10.4.0
     network_mode: bridge
     restart: always
     links:
@@ -23,10 +24,9 @@ services:
       OWNCLOUD_REDIS_PORT: 6379
       OWNCLOUD_DOMAIN: "@%@hostname@%@.@%@domainname@%@"
 
-  
-  
   redis:
-    image: docker.software-univention.de/owncloud-redis:10.2.1-1
+    # Image was: webhippie/redis:latest
+    image: webhippie/redis:latest
     network_mode: bridge
     restart: always
     environment:

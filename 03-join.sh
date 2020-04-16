@@ -129,14 +129,7 @@ univention-directory-manager settings/extended_attribute create "$@" \
   --set tabAdvanced='1'
 
 # Create OpenID Connect relying party entry in UCS
-if [ ! -e /etc/owncloud-oidc-shared.secret ]; then
-	shared_secret=$(create_machine_password)
-	touch /etc/owncloud-oidc-shared.secret
-	chown root:root /etc/owncloud-oidc-shared.secret
-	chmod 600 /etc/owncloud-oidc-shared.secret
-	echo -n "$shared_secret" > /etc/owncloud-oidc-shared.secret
-fi
-
+# /etc/owncloud-oidc-shared.secret is created in app preinst script
 # TODO: set correct redirectURI
 udm oidc/rpservice create "$@" --ignore_exists \
   --position="cn=oidc,cn=univention,$(ucr get ldap/base)" \

@@ -1,0 +1,108 @@
+#!/bin/bash
+
+
+eval "$(/usr/sbin/ucr shell)"
+
+set -e
+set -x
+
+. /usr/share/univention-lib/all.sh
+
+ucs_parseCredentials "$@"
+
+test -n "$binddn" || false
+test -n "$bindpwdfile" || false
+
+create_owncloud_user () {
+	local username=$1
+	local owncloud=${2:-1}
+	udm users/user create \
+		--binddn "$binddn" \
+		--bindpwdfile "$bindpwdfile" \
+		--position "cn=users,$ldap_base" \
+		--ignore_exists \
+		--set username="$username" \
+		--set firstname="$username" \
+		--set lastname="$username" \
+		--set password="univention" \
+		--set owncloudEnabled="$owncloud"
+}
+
+create_non_owncloud_user () {
+	create_owncloud_user "$1" "0"
+}
+
+change_password () {
+	local username="$1"
+	local new_password="$2"
+	udm users/user modify \
+		--binddn "$binddn" \
+		--bindpwdfile "$bindpwdfile" \
+		--dn "uid=$username,cn=users,$ldap_base" \
+		--set password="$new_password"
+}
+
+owncloud_login () {
+	local username="$1"
+	local password="$2"
+	result_message="$(echo -e "${username}\n${password}\n" | cadaver https://$(hostname -f)/owncloud/remote.php/webdav/ 2>&1 | grep 'dav:/owncloud/remote.php/webdav/>')"
+	if [ -n "$result_message" ]; then
+  		echo "Login passed"
+		return 0
+	fi
+	echo "Login failed"
+	return 1
+}
+
+die () {
+	echo "$1" >&2
+	exit 1
+}
+
+remove_user () {
+	udm users/user remove \
+		--binddn "$binddn" \
+		--bindpwdfile "$bindpwdfile" \
+        	--dn "uid=$1,cn=users,$ldap_base"
+}
+
+username1="test1-$(makepasswd)"
+username2="test2-$(makepasswd)"
+username3="test3-$(makepasswd)"
+
+trap "{ 
+	remove_user "$username1"
+	remove_user "$username2"
+	remove_user "$username3"
+}" EXIT
+
+
+if [ ! -e "$(which cadaver)" ]; then
+	ucr set repository/online/unmaintained='yes'
+	univention-install -y cadaver makepasswd
+	ucr set repository/online/unmaintained='no'
+fi
+
+create_owncloud_user "$username1"
+create_non_owncloud_user "$username2"
+create_owncloud_user "$username3"
+
+sleep 10 # wait_for_replication
+
+owncloud_login "$username1" "univention" || die "Login as owncloud user was denied"
+owncloud_login "$username1" "univention1" && die "Permitted login with a wrong password"
+owncloud_login "$username2" "univention" && die "Login as non-owncloud user was allowd"
+owncloud_login "$username3" "univention" || die "Login as owncloud user was denied"
+
+new_password="univention123"
+change_password "$username3" "$new_password"
+
+sleep 10 # wait_for_replication
+
+owncloud_login "$username3" "univention" && die "Login as owncloud user with the old password was allowed"
+owncloud_login "$username3" "$new_password" || die "Login as owncloud user with the new password was denied"
+
+# admin
+owncloud_login "owncloud" "owncloud" || die "Login as owncloud failed"
+
+exit 0

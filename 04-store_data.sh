@@ -18,7 +18,6 @@ mysqldump \
   ${OWNCLOUD_DB_NAME} > ${OWNCLOUD_BACKUP_DIR}/database.sql
 
 echo "store a list of apps, and deactivate them (will be reactivated in new app's setup script)"
-apt-get -q update; apt-get -q -y install jq
 occ app:list --shipped=false --output=json | jq -r '.enabled | keys[]' > /var/lib/univention-appcenter/apps/owncloud/conf/owncloud_app_list
 
 app_whitelist="comments files_videoplayer firstrunwizard market notifications systemtags user_ldap onlyoffice richdocuments"

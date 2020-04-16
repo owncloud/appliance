@@ -6,7 +6,7 @@ SERVICE="ownCloud"
 
 . /usr/share/univention-join/joinscripthelper.lib
 . /usr/share/univention-appcenter/joinscripthelper.sh
-. /usr/share/univention-lib/ldap.sh
+. /usr/share/univention-lib/all.sh
 
 joinscript_init
 eval "$(ucr shell)"
@@ -127,6 +127,28 @@ univention-directory-manager settings/extended_attribute create "$@" \
   univention-directory-manager settings/extended_attribute modify "$@" \
   --dn "cn=ownCloudGroupEnabled,cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" \
   --set tabAdvanced='1'
+
+# Create OpenID Connect relying party entry in UCS
+if [ ! -e /etc/owncloud-oidc-shared.secret ]; then
+	shared_secret=$(create_machine_password)
+	touch /etc/owncloud-oidc-shared.secret
+	chown root:root /etc/owncloud-oidc-shared.secret
+	chmod 600 /etc/owncloud-oidc-shared.secret
+	echo -n "$shared_secret" > /etc/owncloud-oidc-shared.secret
+fi
+
+# TODO: set correct redirectURI
+udm oidc/rpservice create "$@" --ignore_exists \
+  --position="cn=oidc,cn=univention,$(ucr get ldap/base)" \
+  --set name="owncloud" \
+  --set clientid="owncloud" \
+  --set clientsecret="$(</etc/owncloud-oidc-shared.secret)" \
+  --set trusted=yes \
+  --set applicationtype=web \
+  --set redirectURI="https://${hostname}.${domainname}/owncloud" || die
+
+# TODO: configure owncloud oidc setup with clientID and shared secret
+
 
 OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
 OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"

@@ -156,11 +156,14 @@ echo "[02.DOCKER_SETUP] configuring owncloud for onlyoffice use"
 sed -i "s#);#  'onlyoffice' => array ('verify_peer_off' => TRUE),\n&#" $OWNCLOUD_CONF/config.php
 
 #setting collabora URL
+
 #occ app:enable richdocuments 
+
 #if [[ "$(occ config:app:get richdocuments wopi_url)" == "" ]]
 #then
 #   occ config:app:set richdocuments wopi_url --value https://"$docker_host_name" 2>&1 | tee --append /var/lib/univention-appcenter/apps/owncloud/data/files/owncloud-appcenter.log
 #fi
+
 #occ app:disable richdocuments
 
 echo "[02.DOCKER_SETUP] reactivate apps that may have been disabled during an app update" 
@@ -204,8 +207,5 @@ if ! grep OWNCLOUD_UPDATE_CHECKER /etc/univention/base.conf > /dev/null; then
     printf "\nOWNCLOUD_UPDATE_CHECKER: false" >> /etc/univention/base.conf
 fi
 
-echo "[02.DOCKER_SETUP] diabling web updater"
-
-occ app:disable updatenotification
 
 true

@@ -129,19 +129,30 @@ univention-directory-manager settings/extended_attribute create "$@" \
   --set tabAdvanced='1'
 
 # Create OpenID Connect relying party entry in UCS
-# /etc/owncloud-oidc-shared.secret is created in app preinst script
-# TODO: set correct redirectURI
+if ! grep OWNCLOUD_OPENID_CLIENT_ID /etc/univention/base.conf > /dev/null; then
+    printf "\nOWNCLOUD_OPENID_CLIENT_ID: owncloud" >> /etc/univention/base.conf
+fi
+
+# If no shared secret is not set, set it in the owncloud container
+shared_secret="undefined"
+if univention-app shell owncloud grep "OWNCLOUD_OPENID_CLIENT_SECRET: AVeryLongStringThatGetsSetDuringInstallation" /etc/univention/base.conf > /dev/null; then
+	shared_secret=$(create_machine_password)
+	printf "\nOWNCLOUD_OPENID_CLIENT_SECRET: ${shared_secret}" >> /etc/univention/base.conf
+fi
+
+if univention-app shell owncloud grep "OWNCLOUD_OPENID_PROVIDER_URL: \"https://localhost\"" /etc/univention/base.conf > /dev/null; then
+	shared_secret=$(create_machine_password)
+	printf "\nOWNCLOUD_OPENID_PROVIDER_URL: https://ucs-sso.${domainname}/.well-known/openid-configuration" >> /etc/univention/base.conf
+fi
+
 udm oidc/rpservice create "$@" --ignore_exists \
   --position="cn=oidc,cn=univention,$(ucr get ldap/base)" \
   --set name="owncloud" \
   --set clientid="owncloud" \
-  --set clientsecret="$(</etc/owncloud-oidc-shared.secret)" \
+  --set clientsecret="${shared_secret}" \
   --set trusted=yes \
   --set applicationtype=web \
-  --set redirectURI="https://${hostname}.${domainname}/owncloud" || die
-
-# TODO: configure owncloud oidc setup with clientID and shared secret
-
+  --set redirectURI="https://${hostname}.${domainname}/owncloud/index.php/apps/openidconnect/redirect" || die
 
 OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
 OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"

@@ -143,7 +143,7 @@ else
 fi
 
 if univention-app shell owncloud grep "OWNCLOUD_OPENID_PROVIDER_URL: \"https://localhost\"" /etc/univention/base.conf > /dev/null; then
-	univention-app shell owncloud bash -c 'printf "\nOWNCLOUD_OPENID_PROVIDER_URL: https://ucs-sso.${domainname}/.well-known/openid-configuration" >> /etc/univention/base.conf'
+	univention-app shell owncloud bash -c 'printf "\nOWNCLOUD_OPENID_PROVIDER_URL: https://ucs-sso.${domainname}/" >> /etc/univention/base.conf'
 fi
 
 udm oidc/rpservice create "$@" --ignore_exists \

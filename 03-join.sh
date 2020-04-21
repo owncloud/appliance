@@ -129,20 +129,21 @@ univention-directory-manager settings/extended_attribute create "$@" \
   --set tabAdvanced='1'
 
 # Create OpenID Connect relying party entry in UCS
-if ! grep OWNCLOUD_OPENID_CLIENT_ID /etc/univention/base.conf > /dev/null; then
-    printf "\nOWNCLOUD_OPENID_CLIENT_ID: owncloud" >> /etc/univention/base.conf
+if ! univention-app shell owncloud grep OWNCLOUD_OPENID_CLIENT_ID /etc/univention/base.conf > /dev/null; then
+    univention-app shell owncloud bash -c 'printf "\nOWNCLOUD_OPENID_CLIENT_ID: owncloud" >> /etc/univention/base.conf'
 fi
 
-# If no shared secret is not set, set it in the owncloud container
+# If no shared secret is set, set it in the owncloud container
 shared_secret="undefined"
 if univention-app shell owncloud grep "OWNCLOUD_OPENID_CLIENT_SECRET: AVeryLongStringThatGetsSetDuringInstallation" /etc/univention/base.conf > /dev/null; then
-	shared_secret=$(create_machine_password)
-	printf "\nOWNCLOUD_OPENID_CLIENT_SECRET: ${shared_secret}" >> /etc/univention/base.conf
+	shared_secret="$(create_machine_password)"
+	univention-app shell owncloud bash -c 'printf "\nOWNCLOUD_OPENID_CLIENT_SECRET: ${shared_secret}" >> /etc/univention/base.conf'
+else
+	shared_secret="$(univention-app shell owncloud grep 'OWNCLOUD_OPENID_CLIENT_SECRET:' /etc/univention/base.conf 2>&1 | sed -e 's/OWNCLOUD_OPENID_CLIENT_SECRET: //g')"
 fi
 
 if univention-app shell owncloud grep "OWNCLOUD_OPENID_PROVIDER_URL: \"https://localhost\"" /etc/univention/base.conf > /dev/null; then
-	shared_secret=$(create_machine_password)
-	printf "\nOWNCLOUD_OPENID_PROVIDER_URL: https://ucs-sso.${domainname}/.well-known/openid-configuration" >> /etc/univention/base.conf
+	univention-app shell owncloud bash -c 'printf "\nOWNCLOUD_OPENID_PROVIDER_URL: https://ucs-sso.${domainname}/.well-known/openid-configuration" >> /etc/univention/base.conf'
 fi
 
 udm oidc/rpservice create "$@" --ignore_exists \

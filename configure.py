@@ -23,7 +23,7 @@ with open(base_conf) as f, open(local_container_env_file, "w") as t:
 			keyvalue[0] = keyvalue[0].replace(u"OWNCLOUD_OPENID", u"OPENID", 1)
 		keyvalue[1] = "'%s'" % keyvalue[1].strip()
 		# print "%s=%s" % (keyvalue[0], keyvalue[1])
-		t.write("%s=%s\n" % (keyvalue[0], keyvalue[1]))
+		t.write("export %s=%s\n" % (keyvalue[0], keyvalue[1]))
 
 if os.path.isfile(local_container_env_file):
 	os.chmod(local_container_env_file, 0o755)

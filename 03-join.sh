@@ -137,14 +137,16 @@ fi
 shared_secret="undefined"
 if univention-app shell owncloud grep "OWNCLOUD_OPENID_CLIENT_SECRET: AVeryLongStringThatGetsSetDuringInstallation" /etc/univention/base.conf > /dev/null; then
 	shared_secret="$(create_machine_password)"
-	univention-app shell owncloud bash -c 'printf "\nOWNCLOUD_OPENID_CLIENT_SECRET: ${shared_secret}" >> /etc/univention/base.conf'
+	univention-app shell owncloud bash -c "printf '\nOWNCLOUD_OPENID_CLIENT_SECRET: ${shared_secret}' >> /etc/univention/base.conf"
 else
 	shared_secret="$(univention-app shell owncloud grep 'OWNCLOUD_OPENID_CLIENT_SECRET:' /etc/univention/base.conf 2>&1 | sed -e 's/OWNCLOUD_OPENID_CLIENT_SECRET: //g')"
 fi
 
 if univention-app shell owncloud grep "OWNCLOUD_OPENID_PROVIDER_URL: \"https://localhost\"" /etc/univention/base.conf > /dev/null; then
-	univention-app shell owncloud bash -c 'printf "\nOWNCLOUD_OPENID_PROVIDER_URL: https://ucs-sso.${domainname}/" >> /etc/univention/base.conf'
+	univention-app shell owncloud bash -c "printf '\nOWNCLOUD_OPENID_PROVIDER_URL: https://ucs-sso.${domainname}/' >> /etc/univention/base.conf"
 fi
+
+univention-app configure owncloud
 
 udm oidc/rpservice create "$@" --ignore_exists \
   --position="cn=oidc,cn=univention,$(ucr get ldap/base)" \
@@ -153,7 +155,7 @@ udm oidc/rpservice create "$@" --ignore_exists \
   --set clientsecret="${shared_secret}" \
   --set trusted=yes \
   --set applicationtype=web \
-  --set redirectURI="https://${hostname}.${domainname}/owncloud/index.php/apps/openidconnect/redirect" || die
+  --set redirectURI="https://${hostname}.${domainname}/owncloud/apps/openidconnect/redirect" || die
 
 OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
 OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"

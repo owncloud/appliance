@@ -142,10 +142,6 @@ else
 	shared_secret="$(univention-app shell owncloud grep 'OWNCLOUD_OPENID_CLIENT_SECRET:' /etc/univention/base.conf 2>&1 | sed -e 's/OWNCLOUD_OPENID_CLIENT_SECRET: //g')"
 fi
 
-if univention-app shell owncloud grep "OWNCLOUD_OPENID_PROVIDER_URL: \"https://localhost\"" /etc/univention/base.conf > /dev/null; then
-	univention-app shell owncloud bash -c "printf '\nOWNCLOUD_OPENID_PROVIDER_URL: https://ucs-sso.${domainname}/' >> /etc/univention/base.conf"
-fi
-
 univention-app configure owncloud
 
 udm oidc/rpservice create "$@" --ignore_exists \

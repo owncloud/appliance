@@ -1,0 +1,29 @@
+#!/usr/bin/python3
+# run by appcenter listener inside the app container when a user is modified
+from glob import glob
+import sys
+import os
+import os.path
+import subprocess
+
+
+def main(debug=False):
+	files = glob('/var/lib/univention-appcenter/apps/owncloud/data/listener/*.json')
+	if files:
+		for fname in files:
+			if debug:
+				print(u'Deleting ', fname)
+			os.unlink(fname)
+		cmd = [u'/usr/bin/occ', u'user:sync', u'-m', u'disable', u'OCA\\User_LDAP\\User_Proxy']
+		try:
+			if debug:
+				print(u'running ', cmd)
+			subprocess.run(cmd, capture_output=True)
+		except subprocess.CalledProcessError as e:
+			print(u'Error while calling user:sync: ', e)
+			return False
+	return True
+
+
+if not main():
+	sys.exit(1)

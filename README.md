@@ -14,6 +14,11 @@ univention-app dev-use-test-appcenter --revert
 
 univention-install <package-name>
 
+# Get to the Web management console
+
+/FQDN/umc
+
+/FQDN/univention/management
 
 # Install an app
 

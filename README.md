@@ -10,7 +10,9 @@ univention-install -y univention-appcenter-dev; univention-app dev-use-test-appc
 
 univention-app dev-use-test-appcenter --revert
 
+# Install Package
 
+univention-install <package-name>
 
 
 # Install an app

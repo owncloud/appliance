@@ -1,5 +1,5 @@
 #!/bin/bash
-# pre install 
+# pre install
 # outer script, only called when ownCloud App is installed
 
 echo "[01.PRE_INST] folder declaration"
@@ -20,10 +20,10 @@ to_logfile () {
 
 echo "[01.PRE_INST] Test for broken ownCloud installation and fix it to enable updating"
 if [ -d "/root/setup-ldap.sh" ]; then
-	mv /root/setup-ldap.sh /root/setup-ldap.sh.canbedeleted
-	touch /root/setup-ldap.sh
-	# start the owncloud container
-	docker start $(ucr get appcenter/apps/owncloud/container)
+  mv /root/setup-ldap.sh /root/setup-ldap.sh.canbedeleted
+  touch /root/setup-ldap.sh
+  # start the owncloud container
+  docker start $(ucr get appcenter/apps/owncloud/container)
 fi
 
 echo "[01.PRE_INST] read environment variables"
@@ -55,17 +55,17 @@ done
 echo "[01.PRE_INST] configure mariadb"
 # check: if mariadb is installed, set options to enable utf8mb4 support for owncloud
 if [ -n "$mysql_config_mysqld_innodb_file_format" ] && [ "$mysql_config_mysqld_innodb_file_format" != "Barracuda" ]; then
-	echo "Error: innodb_file_format set to value that has to be user modified. Exiting to not overwrite user configuration."
-	exit 1
+  echo "Error: innodb_file_format set to value that has to be user modified. Exiting to not overwrite user configuration."
+  exit 1
 fi
 
 ucr set mysql/config/mysqld/innodb_large_prefix?ON \
-		mysql/config/mysqld/innodb_file_format?Barracuda \
-		mysql/config/mysqld/innodb_file_per_table?ON
+    mysql/config/mysqld/innodb_file_format?Barracuda \
+    mysql/config/mysqld/innodb_file_per_table?ON
 
 if dpkg-query -W -f '${Status}' univention-mariadb 2>/dev/null | grep -q "^install"; then
-	# mariadb installed, restart server with new settings
-	service mariadb restart
+  # mariadb installed, restart server with new settings
+  service mariadb restart
 fi
 
 

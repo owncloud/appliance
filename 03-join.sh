@@ -1,12 +1,12 @@
 #!/bin/bash
 # join
 # outer script
-VERSION=3
+VERSION=2
 SERVICE="ownCloud"
 
 . /usr/share/univention-join/joinscripthelper.lib
 . /usr/share/univention-appcenter/joinscripthelper.sh
-. /usr/share/univention-lib/all.sh
+. /usr/share/univention-lib/ldap.sh
 
 joinscript_init
 eval "$(ucr shell)"
@@ -127,40 +127,6 @@ univention-directory-manager settings/extended_attribute create "$@" \
   univention-directory-manager settings/extended_attribute modify "$@" \
   --dn "cn=ownCloudGroupEnabled,cn=owncloud,cn=custom attributes,cn=univention,$ldap_base" \
   --set tabAdvanced='1'
-
-# Create OpenID Connect relying party entry in UCS
-if ! univention-app shell owncloud grep OWNCLOUD_OPENID_CLIENT_ID /etc/univention/base.conf > /dev/null; then
-    univention-app shell owncloud bash -c 'printf "\nOWNCLOUD_OPENID_CLIENT_ID: owncloud" >> /etc/univention/base.conf'
-fi
-
-# If no shared secret is set, set it in the owncloud container
-shared_secret="undefined"
-if univention-app shell owncloud grep "OWNCLOUD_OPENID_CLIENT_SECRET: AVeryLongStringThatGetsSetDuringInstallation" /etc/univention/base.conf > /dev/null; then
-	shared_secret="$(create_machine_password)"
-	univention-app shell owncloud bash -c "printf '\nOWNCLOUD_OPENID_CLIENT_SECRET: ${shared_secret}' >> /etc/univention/base.conf"
-else
-	shared_secret="$(univention-app shell owncloud grep 'OWNCLOUD_OPENID_CLIENT_SECRET:' /etc/univention/base.conf 2>&1 | sed -e 's/OWNCLOUD_OPENID_CLIENT_SECRET: //g')"
-fi
-
-univention-app configure owncloud
-
-oidc_server="$(univention-ldapsearch -LLL univentionService='OpenID Connect Provider' cn | grep '^cn: ' | sed s/'^cn: '// | head -n1)"
-# the udm module is only available if the OIDC identity provider is installed
-if [ -n "$oidc_server" ]; then
-	udm oidc/rpservice create "$@" --ignore_exists \
-	  --position="cn=oidc,cn=univention,$(ucr get ldap/base)" \
-	  --set name="owncloud" \
-	  --set clientid="owncloud" \
-	  --set clientsecret="${shared_secret}" \
-	  --set trusted=yes \
-	  --set applicationtype=web \
-	  --set redirectURI="https://${hostname}.${domainname}/owncloud/apps/openidconnect/redirect" || die
-
-	# Update client secret in case object exists and secret changed
-	udm oidc/rpservice modify "$@" --dn "cn=owncloud,cn=oidc,cn=univention,${ldap_base}" --set clientsecret="${shared_secret}"
-else
-	echo "No OpenID Connect Provider is installed in domain, cannot create service entry. Install OIDC App and rerun joinscript"
-fi
 
 OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
 OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"

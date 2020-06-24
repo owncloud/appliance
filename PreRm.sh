@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# outer script, called before app removal
 echo "[PRE_RM]"
 # instruct "Configuration script run on the Docker Host" to restart or not
 touch /tmp/do-not-restart
@@ -12,7 +12,6 @@ echo "[PRE_RM] Backing up ownCloud database..."
 mysqldump \
   -uroot \
   -p${DB_PASSWORD} \
-  -h${OWNCLOUD_DB_HOST} \
-  ${OWNCLOUD_DB_NAME} > ${OWNCLOUD_BACKUP_DIR}/database.sql
+  owncloud > ${OWNCLOUD_BACKUP_DIR}/database.sql
 
 true

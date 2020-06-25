@@ -207,5 +207,9 @@ if ! grep OWNCLOUD_UPDATE_CHECKER /etc/univention/base.conf > /dev/null; then
     printf "\nOWNCLOUD_UPDATE_CHECKER: false" >> /etc/univention/base.conf
 fi
 
+# OWNCLOUD_TRASHBIN_RETENTION_OBLIGATION
+if ! grep OWNCLOUD_TRASHBIN_RETENTION_OBLIGATION /etc/univention/base.conf > /dev/null; then
+    printf "\nOWNCLOUD_TRASHBIN_RETENTION_OBLIGATION: 7, 14" >> /etc/univention/base.conf
+fi
 
 true

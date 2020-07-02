@@ -174,7 +174,7 @@ OWNCLOUD_BACKUP_DIR="${OWNCLOUD_DATA}/backup"
 
 
 FQDN="$(ucr get hostname).$(ucr get domainname)"
-if [ "$(ucr get appcenter/apps/onlyoffice-ds/status)" = "installed" ]; then
+if [ "$(ucr get appcenter/apps/onlyoffice-ds/status)" = "installed" ] || [ "$(ucr get appcenter/apps/onlyoffice-ds-ie/status)" = "installed" ]; then
     echo "[03.JOIN] check for installation of ONLYOFFICE"
     univention-app shell owncloud occ app:enable onlyoffice
     if [[ "$(univention-app shell owncloud occ config:app:get onlyoffice DocumentServerUrl)" == "" ]]; then

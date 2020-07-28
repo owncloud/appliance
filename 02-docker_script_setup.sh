@@ -207,5 +207,40 @@ if ! grep OWNCLOUD_UPDATE_CHECKER /etc/univention/base.conf > /dev/null; then
     printf "\nOWNCLOUD_UPDATE_CHECKER: false" >> /etc/univention/base.conf
 fi
 
+# OWNCLOUD_TRASHBIN_RETENTION_OBLIGATION
+ if ! grep OWNCLOUD_TRASHBIN_RETENTION_OBLIGATION /etc/univention/base.conf > /dev/null; then
+     printf "\nOWNCLOUD_TRASHBIN_RETENTION_OBLIGATION: 7, 14" >> /etc/univention/base.conf
+ fi
+
+
+FILE="/usr/bin/univention-owncloud-sync-ldap.sh"
+/bin/cat <<EOM >$FILE
+#!/bin/bash
+# should be placed in /usr/bin/
+# otherwise, the listener_trigger script and the owncloud sync cronjob has to be adapted
+
+source /etc/entrypoint.d/05-univention-env.sh
+
+MODE="${OWNCLOUD_SYNC_DISABLE_MODE}"
+if [ -z "$MODE" ]; then
+	MODE="disable"
+fi
+
+REACTIVATE=
+if [ "$OWNCLOUD_SYNC_ACCOUNT_REACTIVATION" == "true" ]; then
+	REACTIVATE="-r"
+fi
+/usr/bin/occ user:sync -m $MODE $REACTIVATE 'OCA\User_LDAP\User_Proxy'
+EOM
+
+chmod +x /usr/bin/univention-owncloud-sync-ldap.sh
+
+echo "[02.DOCKER_SETUP] setting up user sync in cron"
+cat << EOF >| /etc/cron.d/sync
+*/10  *  *  *  * root /usr/bin/univention-owncloud-sync-ldap.sh
+EOF
+echo "[02.DOCKER_SETUP] first user sync"
+/usr/bin/occ user:sync -m disable "OCA\User_LDAP\User_Proxy" 2>&1 | to_logfile
+
 
 true

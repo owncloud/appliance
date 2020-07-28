@@ -12,7 +12,6 @@ echo "[PRE_RM] Backing up ownCloud database..."
 mysqldump \
   -uroot \
   -p${DB_PASSWORD} \
-  -h${OWNCLOUD_DB_HOST} \
-  ${OWNCLOUD_DB_NAME} > ${OWNCLOUD_BACKUP_DIR}/database.sql
+  owncloud > ${OWNCLOUD_BACKUP_DIR}/database.sql
 
 true

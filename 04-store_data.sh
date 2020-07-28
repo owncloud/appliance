@@ -9,10 +9,10 @@ occ app:list --shipped=false --output=json | jq -r '.enabled | keys[]' > /var/li
 app_whitelist="comments files_videoplayer firstrunwizard market notifications systemtags user_ldap onlyoffice richdocuments"
 
 for app in $(</var/lib/univention-appcenter/apps/owncloud/conf/owncloud_app_list); do
-	for whitelisted_app in $app_whitelist; do 
-		[ "$app" == "$whitelisted_app" ] && continue 2  # Continue on outer loop
-	done
-	occ app:disable "$app"
+  for whitelisted_app in $app_whitelist; do 
+    [ "$app" == "$whitelisted_app" ] && continue 2  # Continue on outer loop
+  done
+  occ app:disable "$app"
 done
 
 true

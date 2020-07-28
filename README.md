@@ -1,6 +1,10 @@
 # Commands for using the Univention Corperate Server
 
 ```
+# Install owncloud
+
+univention-app install owncloud --noninteractive --pwdfile PWDFILE
+
 # Activate Testappcenter to install apps for testing
 
 univention-install -y univention-appcenter-dev; univention-app dev-use-test-appcenter; univention-app update
@@ -22,7 +26,7 @@ univention-install <package-name>
 
 # Install an app
 
-univention-app install owncloud
+univention-app install owncloud --noninteractive --pwdfile PWDFILE
 
 # Remove an app
 

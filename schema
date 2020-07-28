@@ -1,0 +1,25 @@
+attributetype ( 1.3.6.1.4.1.39430.10.1.1 NAME 'ownCloudEnabled'
+        DESC 'wether user is allowed to use ownCloud'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE)
+
+attributetype ( 1.3.6.1.4.1.39430.10.1.2 NAME 'ownCloudQuota'
+        DESC 'how much disk space may the user occupy'
+        EQUALITY caseIgnoreMatch
+        SUBSTR caseIgnoreSubstringsMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE)
+
+objectclass ( 1.3.6.1.4.1.39430.10.2.1 NAME 'ownCloudUser'
+        DESC 'ownCloudUser'
+        SUP top AUXILIARY
+        MUST ( cn )
+        MAY ( ownCloudEnabled $ ownCloudQuota )
+        )
+
+objectclass ( 1.3.6.1.4.1.39430.10.2.2 NAME 'ownCloudGroup'
+        DESC 'ownCloudGroup'
+        SUP top AUXILIARY
+        MUST ( cn )
+        MAY ( ownCloudEnabled $ ownCloudQuota )
+        )

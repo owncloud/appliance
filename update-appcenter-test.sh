@@ -32,6 +32,7 @@ die () {
 # rename files to upload script can associate files correctly
 cp 01-preInstall.sh preinst
 cp 02-docker_script_setup.sh setup
+sed -i -e "/%OWNCLOUD_USERSYNC_SCRIPT%/r univention-owncloud-sync.sh" -e "/%OWNCLOUD_USERSYNC_SCRIPT%/d" setup
 cp 03-join.sh inst
 cp 04-store_data.sh store_data
 cp 05-unjoin.sh uinst

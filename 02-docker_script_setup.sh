@@ -91,13 +91,20 @@ occ ldap:set-config s01 ldapBaseGroups $owncloud_ldap_base_groups 2>&1 | to_logf
 occ ldap:set-config s01 useMemberOfToDetectMembership 0 2>&1 | to_logfile
 occ ldap:set-config s01 ldapConfigurationActive 1 2>&1 | to_logfile
 
+echo "[02.DOCKER_SETUP] setting up user sync script"
+cat << 'EOF' >"/usr/bin/univention-owncloud-sync.sh"
+%OWNCLOUD_USERSYNC_SCRIPT%
+EOF
+
+chmod +x /usr/bin/univention-owncloud-sync.sh
+
 echo "[02.DOCKER_SETUP] setting up user sync in cron"
 cat << EOF >| /etc/cron.d/sync
-*/10  *  *  *  * root /usr/bin/occ user:sync -m disable 'OCA\User_LDAP\User_Proxy'
+*/10  *  *  *  * root /usr/bin/univention-owncloud-sync.sh
 EOF
-echo "[02.DOCKER_SETUP] first user sync"
-/usr/bin/occ user:sync -m disable "OCA\User_LDAP\User_Proxy" 2>&1 | to_logfile
 
+echo "[02.DOCKER_SETUP] first user sync"
+/usr/bin/univention-owncloud-sync.sh
 
 # Cron seems to igrore old cron files
 echo "[02.DOCKER_SETUP] cron fix"

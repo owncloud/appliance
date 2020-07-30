@@ -12,7 +12,9 @@ if udm modules | grep oidc/rpservice -q; then
 				# can be run on dc master+backup
 				# but only if no joinscript is currently running (owncloud inst runs 'univention-app configure owncloud')
 				if ! pgrep -cf "/bin/bash /usr/sbin/univention-run-join-scripts --force --run-scripts 50owncloud.inst"; then
-					univention-run-join-scripts --force --run-scripts 50owncloud.inst
+					if [ -e /usr/lib/univention-install/50owncloud.inst ]; then
+						univention-run-join-scripts --force --run-scripts 50owncloud.inst
+					fi
 				fi
 				;;
 			*)

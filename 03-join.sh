@@ -133,16 +133,8 @@ if ! univention-app shell owncloud grep OWNCLOUD_OPENID_CLIENT_ID /etc/univentio
     univention-app shell owncloud bash -c 'printf "\nOWNCLOUD_OPENID_CLIENT_ID: owncloud" >> /etc/univention/base.conf'
 fi
 
-# If no shared secret is set, set it in the owncloud container
-shared_secret="undefined"
-if univention-app shell owncloud grep "OWNCLOUD_OPENID_CLIENT_SECRET: AVeryLongStringThatGetsSetDuringInstallation" /etc/univention/base.conf > /dev/null; then
-	shared_secret="$(create_machine_password)"
-	univention-app shell owncloud bash -c "printf '\nOWNCLOUD_OPENID_CLIENT_SECRET: ${shared_secret}' >> /etc/univention/base.conf"
-else
-	shared_secret="$(univention-app shell owncloud grep 'OWNCLOUD_OPENID_CLIENT_SECRET:' /etc/univention/base.conf 2>&1 | sed -e 's/OWNCLOUD_OPENID_CLIENT_SECRET: //g')"
-fi
-
-univention-app configure owncloud
+# Always set new shared secret for owncloud and in UDM
+shared_secret="$(create_machine_password)"
 
 oidc_server="$(univention-ldapsearch -LLL univentionService='OpenID Connect Provider' cn | grep '^cn: ' | sed s/'^cn: '// | head -n1)"
 # the udm module is only available if the OIDC identity provider is installed
@@ -161,6 +153,11 @@ if [ -n "$oidc_server" ]; then
 else
 	echo "No OpenID Connect Provider is installed in domain, cannot create service entry. Install OIDC App and rerun joinscript"
 fi
+
+univention-app shell owncloud bash -c "sed -i '/^OWNCLOUD_OPENID_CLIENT_SECRET/d' /etc/univention/base.conf"
+univention-app shell owncloud bash -c "printf '\nOWNCLOUD_OPENID_CLIENT_SECRET: ${shared_secret}' >> /etc/univention/base.conf"
+
+univention-app configure owncloud
 
 OWNCLOUD_PERM_DIR="/var/lib/univention-appcenter/apps/owncloud"
 OWNCLOUD_DATA="${OWNCLOUD_PERM_DIR}/data"

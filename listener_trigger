@@ -13,7 +13,7 @@ def main(debug=False):
 			if debug:
 				print(u'Deleting ', fname)
 			os.unlink(fname)
-		cmd = [u'/usr/bin/occ', u'user:sync', u'-m', u'disable', u'OCA\\User_LDAP\\User_Proxy']
+		cmd = [u'/usr/bin/univention-owncloud-sync.sh']
 		try:
 			if debug:
 				print(u'running ', cmd)

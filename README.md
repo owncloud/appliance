@@ -1,4 +1,4 @@
-# Commands for using the Univention Corperate Server
+Commands for using the Univention Corperate Server
 
 # Activate Testappcenter to install apps for testing
 

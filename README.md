@@ -1,64 +1,67 @@
 # Commands for using the Univention Corperate Server
 
-```
-# Install owncloud
-
-univention-app install owncloud --noninteractive --pwdfile PWDFILE
-
 # Activate Testappcenter to install apps for testing
 
-univention-install -y univention-appcenter-dev; univention-app dev-use-test-appcenter; univention-app update
-
+`univention-install -y univention-appcenter-dev; univention-app dev-use-test-appcenter; univention-app update`
 
 # Deactivate Testappcenter
 
-univention-app dev-use-test-appcenter --revert
+`univention-app dev-use-test-appcenter --revert`
 
-# Install Package
+# Create PWDFILE (replace "123123123" with your Administrator Password) (Remove File after you are done)
 
-univention-install <package-name>
+`echo "123123123" > PWDFILE`
 
-# Get to the Web management console
+# Update App Catalog
 
-/FQDN/umc
+`univention-app update`
 
-/FQDN/univention/management
+# Install owncloud (latest)
 
-# Install an app
+`univention-app install owncloud --noninteractive --pwdfile PWDFILE`
 
-univention-app install owncloud --noninteractive --pwdfile PWDFILE
+# Install specific ownCloud version for testing
+
+`univention-app install owncloud=10.7.0 --noninteractive --pwdfile PWDFILE`
+
+# Upgrade to latest version
+
+`univention-app upgrade owncloud --noninteractive --pwdfile PWDFILE`
+
+# You can specify a user other than the Admin to perform the upgrade
+
+`univention-app upgrade owncloud --noninteractive --username USERNAME --pwdfile PWDFILE`
 
 # Remove an app
 
-univention-app remove owncloud
+`univention-app remove owncloud`
 
 # Log in to docker container
 
-univention-app shell owncloud
-
-
-# Log in to docker container
-
-univention-app shell owncloud
-
-
-
-# Update Scripts
-
-univention-app update
+`univention-app shell owncloud`
 
 # Get List of all versions
 
-univention-app list owncloud
+`univention-app list owncloud`
 
 # enter docker app with env variables
 
-docker exec -ti owncloud_owncloud_1 entrypoint bash
+`docker exec -ti owncloud_owncloud_1 entrypoint bash`
 
 # restart owncloud container
 
-univention-app restart owncloud
+`univention-app restart owncloud`
 
-# restart apache process
+# restart apache process while in docker container
 
-pkill -U 0 -f /usr/sbin/apache2 --signal SIGUSR1
+`pkill -U 0 -f /usr/sbin/apache2 --signal SIGUSR1`
+
+# Install Package
+
+`univention-install <package-name>` 
+
+# Get to the Web management console
+
+`/FQDN/umc`
+
+`/FQDN/univention/management`

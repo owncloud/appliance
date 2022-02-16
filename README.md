@@ -34,7 +34,7 @@ Commands for using the Univention Corperate Server
 
 # Remove an app
 
-`univention-app remove owncloud`
+`univention-app remove owncloud --noninteractive --pwdfile PWDFILE`
 
 # Log in to docker container
 

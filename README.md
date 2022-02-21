@@ -2,7 +2,9 @@ Commands for using the Univention Corperate Server
 
 ### Activate Testappcenter to install apps for testing
 
-`univention-install -y univention-appcenter-dev; univention-app dev-use-test-appcenter; univention-app update`
+```
+univention-install -y univention-appcenter-dev; univention-app dev-use-test-appcenter; univention-app update
+```
 
 ### Deactivate Testappcenter
 

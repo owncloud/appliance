@@ -61,7 +61,8 @@ fi
 
 ucr set mysql/config/mysqld/innodb_large_prefix?ON \
 		mysql/config/mysqld/innodb_file_format?Barracuda \
-		mysql/config/mysqld/innodb_file_per_table?ON
+		mysql/config/mysqld/innodb_file_per_table?ON \
+		mysql/config/mysqld/innodb_default_row_format?dynamic
 
 if dpkg-query -W -f '${Status}' univention-mariadb 2>/dev/null | grep -q "^install"; then
 	# mariadb installed, restart server with new settings

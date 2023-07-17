@@ -33,6 +33,15 @@ InitialValue = @%@hostname@%@.@%@domainname@%@
 Required = false
 Show = Settings
 
+[OWNCLOUD_TRUSTED_DOMAINS]
+Description = Setting for OWNCLOUD_TRUSTED_DOMAINS env variable. A comma separated list of domain names and/or IP-Addresses where ownCloud can be reached.
+Description[de] = Einstellung für die OWNCLOUD_TRUSTED_DOMAINS env Variable. Eine durch Komma getrennte Liste von Domain Namen und/oder IP-Addressen, unter denen ownCloud erreichbar ist.
+Type = String
+InitialValue = @%@hostname@%@.@%@domainname@%@,@%@interfaces/eth0/address@%@"
+Required = false
+Show = Settings
+Scope = inside, outside
+
 [OWNCLOUD_SUB_URL]
 Description = Setting for OWNCLOUD_SUB_URL env variable. Together with DOMAIN this defines the owncloud setting overwrite.cli.url. This setting also configues the htaccess.RewriteBase option. (default: /owncloud)
 Description[de] = Einstellung für die OWNCLOUD_SUB_URL env Variable. Zusammen mit der Einstellung DOMAIN wird die Option overwrite.cli.url gesetzt. Diese Einstellung konfiguriert außerdem die Option htaccess.RewriteBase. (Standard: /owncloud)

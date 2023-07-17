@@ -1,9 +1,12 @@
 version: '2'
+# References:
+# - https://docs.software-univention.de/app-center/5.0/en/get_started.html#create-a-multi-container-app
+# - https://confluence.owncloud.com/display/OG/Appliance+Release
 
 services:
   owncloud:
     # Image was: owncloud/appliance:10.3.2
-    image: owncloud/appliance:10.4.0
+    image: owncloud/appliance:10.12.2
     network_mode: bridge
     restart: always
     links:
@@ -12,6 +15,7 @@ services:
       OWNCLOUD_DB_TYPE: mysql
       OWNCLOUD_ADMIN_USERNAME: owncloud
       OWNCLOUD_ADMIN_PASSWORD: owncloud
+      # CAUTION: Keep in sync with app-settings.ini
       OWNCLOUD_SUB_URL: /owncloud
       OWNCLOUD_VOLUME_CONFIG: /var/lib/univention-appcenter/apps/owncloud/conf
       OWNCLOUD_VOLUME_FILES: /var/lib/univention-appcenter/apps/owncloud/data/files
@@ -22,7 +26,10 @@ services:
       OWNCLOUD_REDIS_ENABLED: "true"
       OWNCLOUD_REDIS_HOST: redis
       OWNCLOUD_REDIS_PORT: 6379
+      # CAUTION: Keep in sync with app-settings.ini
       OWNCLOUD_DOMAIN: "@%@hostname@%@.@%@domainname@%@"
+      # CAUTION: Keep in sync with app-settings.ini
+      OWNCLOUD_TRUSTED_DOMAINS: "@%@hostname@%@.@%@domainname@%@,@%@interfaces/eth0/address@%@"
 
   redis:
     # Image was: webhippie/redis:latest

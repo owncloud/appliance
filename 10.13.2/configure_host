@@ -1,0 +1,45 @@
+#!/bin/bash
+
+echo "[DOCKER.CONFIGURE_HOST] 20230923 start"
+
+# Test if openid connect is enabled and the udm entry exists
+if udm modules | grep oidc/rpservice -q; then
+	echo 'oidc provider installed'
+	if ! udm oidc/rpservice list --filter name=owncloud | grep DN -q; then
+		# oidc is installed, but no owncloud service exists!
+		# mark owncloud joinscript as pending to create udm oidc/rpservice in there
+		serverrole="$(ucr get server/role)"
+		case $serverrole in
+			domaincontroller_master|domaincontroller_backup)
+				# can be run on dc master+backup
+				# but only if no joinscript is currently running (owncloud inst runs 'univention-app configure owncloud')
+				if ! pgrep -cf "/bin/bash /usr/sbin/univention-run-join-scripts --force --run-scripts 50owncloud.inst"; then
+					if [ -e /usr/lib/univention-install/50owncloud.inst ]; then
+						univention-run-join-scripts --force --run-scripts 50owncloud.inst
+					fi
+				fi
+				;;
+			*)
+				# admin has to run joinscript manually
+				sed -i "/^owncloud v/d" /var/univention-join/status
+				;;
+		esac
+	fi
+else
+	echo "No OIDC identity provider installed"
+fi
+
+# the file "/tmp/do-not-restart" is created in the PreInst and PreRm script.
+if [ -e /tmp/do-not-restart ]
+then
+	rm /tmp/do-not-restart
+else
+	echo "sleep 10; univention-app restart owncloud" | at now
+fi
+
+host_ip_address=$(ucr get interfaces/eth0/address)
+univention-app shell owncloud occ config:system:set trusted_domains 1 --value=${host_ip_address}
+# FIXME: docker-compose.yml does not get updated, when our IPADDR changes.
+echo "OWNCLOUD_TRUSTED_DOMAINS=$OWNCLOUD_DOMAIN,$host_ip_address" | univention-app shell -i owncloud tee -a /etc/environment
+
+echo "[DOCKER.CONFIGURE_HOST] 20230923 done"

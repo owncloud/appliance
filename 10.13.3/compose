@@ -11,8 +11,8 @@ services:
     # image: "docker.software-univention.de/owncloud-owncloud:10.13.1"
     # Image was: owncloud/appliance:10.13.2
     # Image was: docker.software-univention.de/owncloud-owncloud:10.13.2
-    # Image was: "docker.software-univention.de/owncloud-owncloud:10.13.2-20231024"
-    image: "docker.software-univention.de/owncloud-owncloud:10.13.2-20231106"
+    # was Image: "docker.software-univention.de/owncloud-owncloud:10.13.2-20231024"
+    # was image: "docker.software-univention.de/owncloud-owncloud:10.13.2-20231106"
     image: "owncloud/appliance:10.13.3"
     network_mode: bridge
     restart: always
@@ -45,8 +45,8 @@ services:
     # image: "docker.software-univention.de/owncloud-redis:10.13.1"
     # Image was: redis:6
     # Image was: redis:6.2.7
-    # Image was: docker.software-univention.de/owncloud-redis:10.13.2
-    image: docker.software-univention.de/owncloud-redis:10.13.2-20231106
+    # was Image: docker.software-univention.de/owncloud-redis:10.13.2
+    # was image: docker.software-univention.de/owncloud-redis:10.13.2-20231106
     image: redis:6.2.14
     network_mode: bridge
     restart: always

@@ -45,9 +45,10 @@ services:
     # image: "docker.software-univention.de/owncloud-redis:10.13.1"
     # Image was: redis:6
     # Image was: redis:6.2.7
+    # CAUTION: redis:6.2.14 and redis:7 hang in endless loop restarting.
     # was Image: docker.software-univention.de/owncloud-redis:10.13.2
     # was image: docker.software-univention.de/owncloud-redis:10.13.2-20231106
-    image: redis:6.2.14
+    image: redis:6.2.7
     network_mode: bridge
     restart: always
     environment:

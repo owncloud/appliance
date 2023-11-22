@@ -1,0 +1,54 @@
+version: '2'
+
+services:
+  owncloud:
+    # image was: owncloud/appliance:10.9.1
+    # image was: owncloud/appliance:10.10.0
+    # image was: "docker.software-univention.de/owncloud-owncloud:10.10.0"
+    # image was: owncloud/appliance:10.12.1
+    # image was:  "docker.software-univention.de/owncloud-owncloud:10.13.0"
+    # image was: owncloud/appliance:10.13.1
+    # image: "docker.software-univention.de/owncloud-owncloud:10.13.1"
+    # Image was: owncloud/appliance:10.13.2
+    # Image was: docker.software-univention.de/owncloud-owncloud:10.13.2
+    # Image was: "docker.software-univention.de/owncloud-owncloud:10.13.2-20231024"
+    image: "docker.software-univention.de/owncloud-owncloud:10.13.2-20231106"
+    image: "owncloud/appliance:10.13.3"
+    network_mode: bridge
+    restart: always
+    links:
+    - "redis:redis"
+    environment:
+      OWNCLOUD_DB_TYPE: mysql
+      OWNCLOUD_ADMIN_USERNAME: owncloud
+      OWNCLOUD_ADMIN_PASSWORD: owncloud
+      OWNCLOUD_SUB_URL: /owncloud
+      OWNCLOUD_VOLUME_CONFIG: /var/lib/univention-appcenter/apps/owncloud/conf
+      OWNCLOUD_VOLUME_FILES: /var/lib/univention-appcenter/apps/owncloud/data/files
+      OWNCLOUD_VOLUME_CERTS: /var/lib/univention-appcenter/apps/owncloud/data/certs
+      OWNCLOUD_VOLUME_APPS: /var/lib/univention-appcenter/apps/owncloud/data/custom
+      OWNCLOUD_VOLUME_SESSIONS: /var/lib/univention-appcenter/apps/owncloud/data/sessions
+      OWNCLOUD_MYSQL_UTF8MB4: "true"
+      OWNCLOUD_REDIS_ENABLED: "true"
+      OWNCLOUD_REDIS_HOST: redis
+      OWNCLOUD_REDIS_PORT: 6379
+      OWNCLOUD_DOMAIN: "@%@hostname@%@.@%@domainname@%@"
+      OWNCLOUD_TRUSTED_DOMAINS: "@%@hostname@%@.@%@domainname@%@,@%@interfaces/eth0/address@%@"
+  
+  
+  redis:
+    # image was: webhippie/redis:latest
+    # image was: redis:6 
+    # image was: docker.software-univention.de/owncloud-redis:10.10.0
+    # image: "docker.software-univention.de/owncloud-redis:10.13.0"
+    # image was: docker.software-univention.de/owncloud-redis:10.12.1
+    # image: "docker.software-univention.de/owncloud-redis:10.13.1"
+    # Image was: redis:6
+    # Image was: redis:6.2.7
+    # Image was: docker.software-univention.de/owncloud-redis:10.13.2
+    image: docker.software-univention.de/owncloud-redis:10.13.2-20231106
+    image: redis:6.2.14
+    network_mode: bridge
+    restart: always
+    environment:
+      REDIS_DATABASES: 1
